@@ -1,8 +1,3 @@
-import { MdOutlineDashboard } from "react-icons/md";
-import { CiUser } from "react-icons/ci";
-import { PiHandbag } from "react-icons/pi";
-import { FaBoxArchive } from "react-icons/fa6";
-import { MdOutlineViewKanban } from "react-icons/md";
 import Link from "next/link";
 import { GalleryVerticalEnd } from 'lucide-react';
 import {Navitems,iconMap} from "@/constants/home";
@@ -19,13 +14,6 @@ import {
 } from "@/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ChevronDown } from "lucide-react";
-
-// Define the type for iconMap
-interface IconMap {
-  [key: string]: JSX.Element;
-}
-
-
 
 export const company = {
   name: 'Acme Inc',

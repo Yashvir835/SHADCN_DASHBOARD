@@ -106,7 +106,7 @@ export function DataTable<TData, TValue>({
                 </DropdownMenu>
             </div>
             <ScrollArea className="md:h-[calc(100dvh-200px)] lg:h-[calc(100dvh-375px)] xl:h-[calc(100dvh-440px)] 
-            xl:w-[calc(100dvw-400px)] lg:w-[calc(100dvw-10px)] sm:w-[calc(100dvw-20px)] 
+            xl:w-auto lg:w-[calc(100dvw-10px)] sm:w-[calc(100dvw-20px)] 
             rounded-md border p-2 md:p-4 overflow-auto">
                 <div className="rounded-md border  p-4 md:px-6">
                     <Table>

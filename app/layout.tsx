@@ -48,7 +48,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               {/* <CalenderComponent /> */}
             </div>
             <div className="absolute top-0 right-0 p-4">
-             <ComboboxDemo ></ComboboxDemo>
+              <ComboboxDemo />
             </div>
             {children}
           </main>
