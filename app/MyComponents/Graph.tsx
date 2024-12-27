@@ -6,7 +6,7 @@ import { RecentSales } from "./RecentSales";
 function Graph() {
   return (
     <div className="flex flex-wrap mt-2 w-full">
- <div className="w-full min-h-[300px] lg:w-1/2 p-2">       
+ <div className="w-full zzzmin-h-[300px] lg:w-1/2 p-2">       
           <BarChart />
         
       </div>

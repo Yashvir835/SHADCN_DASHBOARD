@@ -38,7 +38,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           }
         )} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider className="ml-8 my-0">
+        <SidebarProvider className="ml-1 my-0">
           <AppSidebar />
           <main className="flex-1 p-6">
             <SidebarTrigger />

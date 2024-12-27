@@ -21,7 +21,6 @@ interface HomeDataItem {
   symbol: 'dollar' | 'person' | 'box' | 'wave';
 }
 
-
 import { homeData } from "@/constants/home";
 // Create the icon map with explicit type
 const iconMap: Record<HomeDataItem['symbol'], JSX.Element> = {
@@ -35,7 +34,7 @@ function CardComponent() {
   return (
     <div className="flex flex-wrap gap-4">
       {homeData.map((item) => (
-        <Card key={item.id} className="relative flex-1 min-w-[200px] max-h-[140px] p-1">
+        <Card key={item.id} className="relative flex-1 min-w-[150px] w-full lg:w-auto p-1 overflow-hidden">
           <CardHeader className="text-wrap">
             <CardTitle className="text-sm font-normal">{item.title}</CardTitle>
             <CardDescription className="text-2xl text-black font-bold">{item.number}</CardDescription>

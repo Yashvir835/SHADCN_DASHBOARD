@@ -23,7 +23,7 @@ export const company = {
 
 export function AppSidebar() {
   return (
-    <Sidebar className="bg-off-white w-1/5" variant="sidebar" collapsible="icon">
+    <Sidebar className="bg-off-white w-[235px] " variant="sidebar" collapsible="icon">
       <SidebarHeader>
         <div className="flex gap-2 py-2 ">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
