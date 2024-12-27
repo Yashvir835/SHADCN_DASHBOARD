@@ -3,6 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,7 +51,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: 'photo_url',
     header: "Image",
     cell: ({ cell }) => (
-      <img src={cell.getValue<string>()} alt="Product" width={50} height={50} />
+      <Image src={cell.getValue<string>()} alt="Product" width={50} height={50} />
     ),
   },
   {

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import CardComponent from "./MyComponents/Card";
-// import CalendarDemo from "./MyComponents/Calender";
-// import { ModeToggle } from "@/components/ui/mode-toggle";
+
 import Graph from "./MyComponents/Graph";
 export default function Home() {
   return (
