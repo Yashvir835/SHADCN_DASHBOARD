@@ -6,16 +6,15 @@ import { fakeUsers } from "@/constants/mock-api";
 
 export default function DemoPage() {
   const [data, setData] = useState<Payment[]>([]);
-  const [page, setPage] = useState(1);
   const limit = 20; // Number of users per page
 
   useEffect(() => {
     async function fetchData() {
-      const users = await getData(page, limit);
+      const users = await getData(1, limit);
       setData(users);
     }
     fetchData();
-  }, [page]);
+  }, []);
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
