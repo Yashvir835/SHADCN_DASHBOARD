@@ -1,4 +1,3 @@
-import Image from "next/image";
 import CardComponent from "./MyComponents/Card";
 
 import Graph from "./MyComponents/Graph";

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Payment, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { fakeUsers } from "@/constants/mock-api";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 export default function DemoPage() {
   const [data, setData] = useState<Payment[]>([]);
