@@ -8,14 +8,14 @@ import { ComboboxDemo } from "@/components/layout/combobox";
 import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { ModeToggle } from "@/components/layout/dark-model-toggle";
-
+import {DropdownMenuDemo} from "./MyComponents/DropdownMenu";
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "./fonts/GeistVF.woff", // Ensure this file exists
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+  src: "./fonts/GeistMonoVF.woff", // Ensure this file exists
   variable: "--font-geist-mono",
   weight: "100 900",
 });
@@ -56,6 +56,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </div>
               <div className="absolute top-0 right-0 p-4 flex space-x-4">
                 <ComboboxDemo />
+                <DropdownMenuDemo />
                 <ModeToggle />
 
               </div>

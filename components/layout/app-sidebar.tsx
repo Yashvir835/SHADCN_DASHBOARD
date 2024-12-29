@@ -110,7 +110,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="h-12">
-                  <Avatar className="h-8 w-8 items-center p-1 border-2 bg-stone-300 rounded-lg">
+                  <Avatar className="h-8 w-8 items-center  p-1 border-2  rounded-lg">
                     <AvatarImage src="/avatars/02.png" />
                     <AvatarFallback >JO</AvatarFallback>
                   </Avatar>

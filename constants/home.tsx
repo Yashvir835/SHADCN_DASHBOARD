@@ -94,7 +94,7 @@ export const Navitems = [
       {
         title: 'Login',
         shortcut: ['l', 'l'],
-        url: '/dashboard/account/login',
+        url: '/dashboard/login',
       },
     ],
   },

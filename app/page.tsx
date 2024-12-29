@@ -3,7 +3,8 @@ import CardComponent from "./MyComponents/Card";
 import { CalendarDateRangePicker } from "@/components/layout/calander";
 import Graph from "./MyComponents/Graph";
 import { Button } from "@/components/ui/button";
-export default function Home() {
+
+export default function HomePage() {
   return (
     <div className="p-6">
       <div className="flex ">
@@ -21,9 +22,7 @@ export default function Home() {
         <div className="flex gap-2 absolute right-0 mr-2 hidden md:flex">
           <CalendarDateRangePicker />
           <Button>Download</Button>
-
         </div>
-
       </div>
       <CardComponent />
       <Graph />

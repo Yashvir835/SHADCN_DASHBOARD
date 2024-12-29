@@ -49,7 +49,7 @@ const items = [
   },
   {
     title: 'Login',
-    url: '/',
+    url: '/dashboard/login',
     icon: 'login',
     shortcut: ['l', 'l'],
     isActive: false,
@@ -107,7 +107,7 @@ export function ComboboxDemo() {
       </Button>
       {isDropdownOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2" ref={dropdownRef}>
+          <div className=" p-6 rounded-lg  w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2" ref={dropdownRef}>
             <Command>
               <CommandInput placeholder="Type a command or Search..." />
               <CommandList>
@@ -139,12 +139,12 @@ export function ComboboxDemo() {
                 </CommandGroup>
               </CommandList>
             </Command>
-            <button
+            <Button
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
               onClick={handleClose}
             >
               Close
-            </button>
+            </Button>
           </div>
         </div>
       )}
