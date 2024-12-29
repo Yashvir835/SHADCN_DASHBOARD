@@ -3,9 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils"; // Ensure this is properly imported and defined
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ComboboxDemo } from "@/components/combobox";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { ComboboxDemo } from "@/components/layout/combobox";
 import { ReactNode } from "react";
+import { ThemeProvider } from "@/components/layout/theme-provider"
+import { ModeToggle } from "@/components/layout/dark-model-toggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,21 +40,32 @@ export default function RootLayout({ children }: RootLayoutProps) {
           }
         )} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider className="ml-1 my-0">
-          <AppSidebar />
-          <main className="flex-1 p-6">
-            <SidebarTrigger />
-           
-            <div className="mb-6">
-              {/* having issue in this component */}
-              {/* <CalenderComponent /> */}
-            </div>
-            <div className="absolute top-0 right-0 p-4">
-              <ComboboxDemo />
-            </div>
-            {children}
-          </main>
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+
+        >
+          <SidebarProvider className="ml-8 my-0">
+            <AppSidebar />
+            <main className="flex-1 p-6">
+              <SidebarTrigger />
+
+              <div className="mb-6">
+                {/* having issue in this component */}
+                {/* <CalenderComponent /> */}
+              </div>
+              <div className="absolute top-0 right-0 p-4 flex space-x-4">
+                <ComboboxDemo />
+                <ModeToggle />
+
+              </div>
+
+              {children}
+
+
+            </main>
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

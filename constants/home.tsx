@@ -83,21 +83,18 @@ export const Navitems = [
   },
   {
     title: 'Account',
-    url: '/dashboard/account',
     icon: 'billing',
     isActive: true,
     items: [
       {
         title: 'Profile',
         url: '/dashboard/profile',
-        icon: 'userPen',
         shortcut: ['m', 'm'],
       },
       {
         title: 'Login',
         shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login',
+        url: '/dashboard/account/login',
       },
     ],
   },
