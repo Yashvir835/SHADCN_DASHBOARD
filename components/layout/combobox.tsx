@@ -56,14 +56,14 @@ const items = [
     items: [],
   },
   
-   {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [],
-  },
+  //  {
+  //   title: 'Kanban',
+  //   url: '/dashboard/kanban',
+  //   icon: 'kanban',
+  //   shortcut: ['k', 'k'],
+  //   isActive: false,
+  //   items: [],
+  // },
 ];
 
 export function ComboboxDemo() {

@@ -5,7 +5,7 @@ import { CiWavePulse1 } from "react-icons/ci";
 import { MdOutlineDashboard } from "react-icons/md";
 import { CiUser } from "react-icons/ci";
 import { PiHandbag } from "react-icons/pi";
-import { MdOutlineViewKanban } from "react-icons/md";
+// import { MdOutlineViewKanban } from "react-icons/md";
 const iconMap1 = {
   dollar: <FiDollarSign />,
   person: <IoPersonOutline />,
@@ -53,7 +53,7 @@ export const iconMap: IconMap = {
   user: <CiUser />,
   product: <PiHandbag />,
   billing: <FaBoxArchive />,
-  kanban: <MdOutlineViewKanban />,
+  // kanban: <MdOutlineViewKanban />,
 };
 
 export const Navitems = [
@@ -98,12 +98,12 @@ export const Navitems = [
       },
     ],
   },
-  {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [],
-  },
+  // {
+  //   title: 'Kanban',
+  //   url: '/dashboard/kanban',
+  //   icon: 'kanban',
+  //   shortcut: ['k', 'k'],
+  //   isActive: false,
+  //   items: [],
+  // },
 ];
