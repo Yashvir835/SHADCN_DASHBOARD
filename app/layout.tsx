@@ -9,6 +9,14 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { ModeToggle } from "@/components/layout/dark-model-toggle";
 import {DropdownMenuDemo} from "./MyComponents/DropdownMenu";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff", // Ensure this file exists
   variable: "--font-geist-sans",
@@ -31,6 +39,7 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body
         className={`${cn(
@@ -56,7 +65,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </div>
               <div className="absolute top-0 right-0 p-4 flex space-x-4">
                 <ComboboxDemo />
-                <DropdownMenuDemo />
+                {/* <DropdownMenuDemo /> */}
+                <SignedOut>
+                  <SignInButton />
+                </SignedOut>
+                
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
                 <ModeToggle />
 
               </div>
@@ -69,5 +85,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </ThemeProvider>
       </body>
     </html>
+    </ClerkProvider>
+
   );
 }
