@@ -92,9 +92,9 @@ export const Navitems = [
         shortcut: ['m', 'm'],
       },
       {
-        title: 'Login',
+        title: 'DataDock',
         shortcut: ['l', 'l'],
-        url: '/dashboard/login',
+        url: '/dashboard/DataDock',
       },
     ],
   },

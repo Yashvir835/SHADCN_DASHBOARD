@@ -17,7 +17,6 @@ import {
   UserButton
 } from '@clerk/nextjs'
 import { Button } from "@/components/ui/button";
-
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -28,6 +27,7 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
 
 export const metadata: Metadata = {
   title: "Nexus Being Group",
@@ -53,40 +53,54 @@ export default function RootLayout({ children }: RootLayoutProps) {
             "antialiased"
           )}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-          >
-            <SignedIn>
-              <SidebarProvider className="ml-8 my-0">
-                <AppSidebar />
-                <main className="flex-1 p-6">
-                  <SidebarTrigger />
-                  <div className="absolute top-0 right-0 p-4 flex space-x-4">
-                    <ComboboxDemo />
-                    <UserButton />
-                    <ModeToggle />
-                  </div>
-                  {children}
-                </main>
-              </SidebarProvider>
-            </SignedIn>
-            <SignedOut>
-              <LandingPage />
-              <div className="fixed top-4 right-4 flex items-center space-x-4">
-                <ModeToggle />
-                <SignInButton mode="modal">
-                  <Button variant="outline">
-                    Sign In
-                  </Button>
-                </SignInButton>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+
+        >
+          <SignedIn>
+     
+          <SidebarProvider className="ml-8 my-0">
+            <AppSidebar />
+            <main className="flex-1 p-6">
+              <SidebarTrigger />
+
+              <div className="mb-6">
+                {/* having issue in this component */}
+                {/* <CalenderComponent /> */}
               </div>
-            </SignedOut>
-          </ThemeProvider>
-        </body>
-      </html>
+              <div className="absolute top-0 right-0 p-4 flex space-x-4">
+                <ComboboxDemo />
+                {/* <DropdownMenuDemo /> */}
+           
+                
+            
+                  <UserButton />
+                <ModeToggle />
+
+              </div>
+
+              {children}
+
+
+            </main>
+          </SidebarProvider>
+          </SignedIn>
+          <SignedOut>
+            <LandingPage />
+            <div className="fixed top-4 right-4 flex items-center space-x-4">
+              <ModeToggle />
+              <SignInButton mode="modal">
+                <Button variant="outline">
+                  Sign In
+                </Button>
+              </SignInButton>
+            </div>
+          </SignedOut>
+        </ThemeProvider>
+      </body>
+    </html>
     </ClerkProvider>
+
   );
 }
-
