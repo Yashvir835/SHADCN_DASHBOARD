@@ -1,7 +1,8 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCcRo37TkPH_VpDItJDpOwSCB0r1R8CCrc",
   authDomain: "sonny-ai-d4a1a.firebaseapp.com",
@@ -14,5 +15,15 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 const storage = getStorage(app);
-const analytics = getAnalytics(app);
+
+// Ensure Firebase Analytics is only initialized in the client-side environment
+let analytics;
+if (typeof window !== "undefined") {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
+
 export { db, storage, analytics };
