@@ -31,7 +31,9 @@ const AvatarExperiencePage = () => {
     if (user) {
       try {
         // Replace with your actual API endpoint
-        const response = await fetch(`/api/experience-avatar?userId=${user.id}&businessName=${businessName}`)
+        const Id = `userDetails/${user.id}/businesses/${businessName}`
+
+        const response = await fetch(`/api/experience-avatar?userId=${Id}`)
         const data = await response.json()
 
         if (response.ok) {
