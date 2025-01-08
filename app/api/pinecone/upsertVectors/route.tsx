@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       businessData.description,
       businessData.name,
       businessData.business,
-      businessData.dateAdded || "", // Ensure dateAdded is handled even if not available
+      // businessData.dateAdded || "", // Ensure dateAdded is handled even if not available
       businessData.documentUrl || "" // Handle possible undefined documentUrl
     ];
 
@@ -90,9 +90,10 @@ export async function POST(req: NextRequest) {
       metadata: {
         description: businessData.description,
         name: businessData.name,
-        location: businessData.location,
+        business: businessData.business,
         dateAdded: businessData.dateAdded || "N/A", // Add fallback if the field is missing
         documentUrl: businessData.documentUrl || "N/A", // Add fallback if the field is missing
+        imgUrl: businessData.imageUrl || "N/A", // Add fallback if the field is missing
       },
     }));
 

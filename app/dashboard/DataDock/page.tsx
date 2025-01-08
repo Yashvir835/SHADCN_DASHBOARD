@@ -15,6 +15,15 @@ import { Separator } from "@/components/ui/separator"
 import { Heading } from "@/components/ui/heading"
 import { Loader2 } from 'lucide-react'
 import { StoreData } from "@/lib/StoreData"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -35,6 +44,8 @@ const DataDockPage: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const [storedData, setStoredData] = useState<FormValues | null>(null)
   const [businessToView, setBusinessToView] = useState("")
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false)
+  const [alertDialogContent, setAlertDialogContent] = useState({ title: "", description: "" })
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -47,8 +58,6 @@ const DataDockPage: React.FC = () => {
     },
   })
 
- 
-
   const steps = [
     { id: "Step 1", name: "Basic Information", fields: ["name", "business"] },
     { id: "Step 2", name: "Additional Details", fields: ["description"] },
@@ -56,22 +65,26 @@ const DataDockPage: React.FC = () => {
     { id: "Step 4", name: "Review and Submit", fields: [] },
   ]
 
- const uploadFile = async (file: File, folder: string, business: string, userId: string): Promise<string> => {
-  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize business name
-  const fileRef = ref(storage, `${userId}/${safeBusinessName}/${folder}/${file.name}`); // Path: user.id/businessName/folder/file.name
+  const uploadFile = async (file: File, folder: string, business: string, userId: string): Promise<string> => {
+    const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize business name
+    const fileRef = ref(storage, `${userId}/${safeBusinessName}/${folder}/${file.name}`); // Path: user.id/businessName/folder/file.name
 
-  // Upload file
-  await uploadBytes(fileRef, file);
+    // Upload file
+    await uploadBytes(fileRef, file);
 
-  // Get download URL
-  const downloadURL = await getDownloadURL(fileRef);
-  return downloadURL;
-};
+    // Get download URL
+    const downloadURL = await getDownloadURL(fileRef);
+    return downloadURL;
+  };
 
+  const showAlert = (title: string, description: string) => {
+    setAlertDialogContent({ title, description });
+    setAlertDialogOpen(true);
+  };
 
   const onSubmit = async (data: FormValues) => {
     if (!user) {
-      alert("You must be logged in to submit data.");
+      showAlert("Error", "You must be logged in to submit data.");
       return;
     }
 
@@ -107,12 +120,12 @@ const DataDockPage: React.FC = () => {
       if (businessSnapshot.exists()) {
         // Merge with existing data for the specific business
         await setDoc(businessRef, newBusinessData, { merge: true });
-        alert("Business details updated successfully!");
+        showAlert("Success", "Business details updated successfully!");
         StoreData(safeBusinessName)
       } else {
         // Create a new document for the business
         await setDoc(businessRef, newBusinessData);
-        alert("New business added successfully!");
+        showAlert("Success", "New business added successfully!");
         StoreData(safeBusinessName)
       }
 
@@ -128,18 +141,16 @@ const DataDockPage: React.FC = () => {
       setCurrentStep(0); // Reset step to the beginning
     } catch (error) {
       console.error("Error adding details:", error);
-      alert("Failed to add details. Please try again.");
+      showAlert("Error", "Failed to add details. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-
-
   const nextStep = async () => {
     const fields = steps[currentStep].fields
     const output = await form.trigger(fields as Array<keyof FormValues>)
-    if (output && currentStep < steps.length - 1) {
+    if (output && currentStep < steps.length ) {
       setCurrentStep((step) => step + 1)
     }
   }
@@ -162,7 +173,7 @@ const DataDockPage: React.FC = () => {
               <span className="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
                 {index < currentStep ? (
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
                 ) : (
                   <span className="mr-2">{index + 1}</span>
@@ -204,7 +215,6 @@ const DataDockPage: React.FC = () => {
                   </FormItem>
                 )}
               />
-
             </>
           )}
 
@@ -288,17 +298,18 @@ const DataDockPage: React.FC = () => {
             >
               Previous
             </Button>
-            {currentStep < steps.length - 1 ? (
+            {currentStep < steps.length - 1 && (
               <Button type="button" onClick={nextStep}>
                 Next
               </Button>
-            ) : (
+            )}
+            {currentStep == 3 && (
               <Button type="submit" disabled={loading}>
                 {loading ? (
-                  <span className="flex items-center">
+                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Submitting...
-                  </span>
+                  </>
                 ) : (
                   "Submit"
                 )}
@@ -307,6 +318,20 @@ const DataDockPage: React.FC = () => {
           </div>
         </form>
       </Form>
+
+      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alertDialogContent.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {alertDialogContent.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

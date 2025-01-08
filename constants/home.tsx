@@ -6,6 +6,8 @@ import { MdOutlineDashboard } from "react-icons/md";
 import { CiUser } from "react-icons/ci";
 import { PiHandbag } from "react-icons/pi";
 import { SiDigitalocean } from "react-icons/si";
+import { FaDatabase } from "react-icons/fa6";
+
 const iconMap1 = {
   dollar: <FiDollarSign />,
   person: <IoPersonOutline />,
@@ -54,6 +56,7 @@ export const iconMap: IconMap = {
   product: <PiHandbag />,
   billing: <FaBoxArchive />,
   avtar: <SiDigitalocean />,
+  database: <FaDatabase />,
 };
 
 export const Navitems = [
@@ -77,6 +80,14 @@ export const Navitems = [
     title: 'Product',
     url: '/dashboard/product',
     icon: 'product',
+    shortcut: ['p', 'p'],
+    isActive: false,
+    items: [],
+  },
+  {
+    title: 'Data',
+    url: '/dashboard/Viewstored-Data',
+    icon: 'database',
     shortcut: ['p', 'p'],
     isActive: false,
     items: [],
