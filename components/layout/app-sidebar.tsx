@@ -38,9 +38,9 @@ import { MdLogout } from "react-icons/md";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 
 export const company = {
-  name: 'Acme Inc',
+  name: 'Nexus Beings',
   logo: GalleryVerticalEnd,
-  plan: 'Enterprise',
+  plan: 'Group',
 };
 
 export function AppSidebar() {

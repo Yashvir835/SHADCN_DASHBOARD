@@ -30,7 +30,7 @@ const geistMono = localFont({
 
 
 export const metadata: Metadata = {
-  title: "Nexus Being Group",
+  title: "Nexus Beings",
   description: "Revolutionizing the world of digital humans",
 };
 

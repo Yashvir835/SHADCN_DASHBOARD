@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     console.log("Received request...");
 
     // Get the authenticated user's data (server-side)
-    const { userId } = getAuth(req);  // Extracting userId (email) using Clerk
+    const { userId } = getAuth(req);  // Extracting userId  using Clerk
     if (!userId) {
       console.log("No userId or email found in request");
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
