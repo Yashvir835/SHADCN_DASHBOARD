@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Heading } from "@/components/ui/heading"
 import { Loader2, Upload, X } from 'lucide-react'
-import { addOrUpdateBusiness } from "@/lib/firebase"
+import { addOrUpdateBusiness, fetchBusinessDetails } from "@/lib/firebase"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,8 +25,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { handler } from "@/lib/UpsertVectorHandler"
-
-// Define the form schema using zod
 // Define the form schema using zod
 const formSchema = z.object({
   documents: z.array(z.instanceof(File)), 
@@ -46,7 +44,6 @@ export default function UploadDocument() {
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState({ title: "", description: "" })
   const [activeTab, setActiveTab] = useState<"upload" | "text">("upload")
-
   // Initialize the form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,13 +74,18 @@ export default function UploadDocument() {
 
     setLoading(true)
 
-    try {
-      const result = await addOrUpdateBusiness(
+    // through this function we fetch the bussiness details like user name registered
+    const businessDetails = await fetchBusinessDetails(user?.id, selectedBusiness)
+    
+    try
+   {
+      const result = await addOrUpdateBusiness
+      (
         user.id,
         {
-          name: selectedBusiness,
+           name : businessDetails.name,
           business: selectedBusiness,
-          description: "Document Upload",
+          description: businessDetails.description,
           documents: data.documents,
           websiteUrl: data.websiteUrl,
           textContent: data.textContent,

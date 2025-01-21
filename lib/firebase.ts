@@ -24,21 +24,69 @@ export const uploadFile = async (file: File, folder: string, business: string, u
   return downloadURL;
 };
 
-// this function create text into pdf and upload into the firebase
 export const uploadTextAsPDF = async (text: string, business: string, userId: string): Promise<string> => {
-  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_")
-  const fileName = `${Date.now()}_content.pdf`
+  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_");
+  const fileName = `${Date.now()}_content.pdf`;
 
-  // Create PDF from text
-  const doc = new jsPDF()
-  doc.text(text, 10, 10)
-  const pdfBlob = doc.output("blob")
+  // Create PDF instance
+  const doc = new jsPDF();
+  const pageHeight = doc.internal.pageSize.height; // Page height
+  const pageWidth = doc.internal.pageSize.width - 20; // Page width with margin
+  const lineSpacing = 10; // Spacing between lines
+  let y = 10; // Initial Y position for text
+
+  // Helper function to detect headings
+  const isHeading = (line: string) => {
+    const trimmedLine = line.trim();
+    return (
+      /^[A-Z ]+:$/.test(trimmedLine) || // Ends with a colon and is uppercase
+      trimmedLine.toUpperCase() === trimmedLine || // Fully uppercase
+      trimmedLine.length <= 25 // Short lines (titles/headings)
+    );
+  };
+
+  // Split input text into lines based on newlines
+  const lines = text.split("\n");
+
+  lines.forEach((line) => {
+    if (y + lineSpacing > pageHeight) {
+      doc.addPage(); // Add a new page if text exceeds current page height
+      y = 10; // Reset Y position for the new page
+    }
+
+    if (isHeading(line)) {
+      // Format as heading
+      doc.setFontSize(16); // Larger font size for headings
+      doc.setFont("helvetica", "bold"); // Bold font for headings
+      doc.text(line.trim(), 10, y); // Write the heading text
+      y += lineSpacing + 4; // Add extra spacing after headings
+    } else {
+      // Format as paragraph
+      doc.setFontSize(12); // Regular font size for paragraphs
+      doc.setFont("helvetica", "normal"); // Normal font for paragraphs
+
+      const paragraphLines = doc.splitTextToSize(line.trim(), pageWidth); // Split paragraph into lines
+      paragraphLines.forEach((pLine) => {
+        if (y + lineSpacing > pageHeight) {
+          doc.addPage(); // Add new page if text exceeds page height
+          y = 10;
+        }
+        doc.text(pLine, 10, y); // Write each line of the paragraph
+        y += lineSpacing;
+      });
+    }
+  });
+
+  const pdfBlob = doc.output("blob");
 
   // Convert Blob to File
-  const file = new File([pdfBlob], fileName, { type: "application/pdf" })
+  const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
-  return await uploadFile(file, "documents", safeBusinessName, userId)
-}
+  return await uploadFile(file, "documents", safeBusinessName, userId);
+};
+
+
+
 
 // Main function to add or update business data
 export const addOrUpdateBusiness = async (
