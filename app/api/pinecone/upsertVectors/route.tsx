@@ -1,124 +1,121 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/app/firebase/firebase-config';
-import { getAuth } from '@clerk/nextjs/server'; // Server-side auth for Clerk
+import { getAuth } from '@clerk/nextjs/server';
 import pc from '@/lib/pinecone-client';
+import { CharacterTextSplitter } from "@langchain/textsplitters";
+import axios from 'axios';
+import pdf from 'pdf-parse';
 
-export async function POST(req: NextRequest) {
+// Define proper types for Pinecone responses
+type PineconeResponse = {
+  values: number[];
+}
+
+async function generateEmbeddings(chunks: string[]): Promise<number[][]> {
+  const embeddings: number[][] = [];
+  const modelName = 'multilingual-e5-large';
+
   try {
-    console.log("Received request...");
+    for (const chunk of chunks) {
+      // Type assertion to handle the Pinecone response
+      const response = await pc.inference.embed(
+        chunk,
+        modelName,
+        []
+      ) as unknown as PineconeResponse;
 
-    // Get the authenticated user's data (server-side)
-    const { userId } = getAuth(req);  // Extracting userId  using Clerk
-    if (!userId) {
-      console.log("No userId or email found in request");
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Parse the request body
-    const { business } = await req.json(); // Extract the 'business' from the request body
-    if (!business) {
-      console.log("No business provided");
-      return NextResponse.json({ error: 'Business name is required' }, { status: 400 });
-    }
-    const Id = `userDetails/${userId}/businesses/${business}`
-    // Fetch the business details from Firestore
-    const businessRef = doc(db, Id);
-    const docSnapshot = await getDoc(businessRef);
-    if (!docSnapshot.exists()) {
-      console.log("Business data not found in Firestore");
-      return NextResponse.json({ error: 'Business not found' }, { status: 404 });
-    }
-
-    const businessData = docSnapshot.data();
-    console.log("Business data fetched:", businessData);
-
-    // Ensure business data has necessary fields
-    if (!businessData || !businessData.description || !businessData.name || !businessData.business) {
-      console.log("Missing necessary fields in business data");
-      return NextResponse.json({ error: 'Missing necessary fields in business data' }, { status: 400 });
-    }
-
-    // Convert relevant fields into text for embeddings
-    const textData = [
-      businessData.description,
-      businessData.name,
-      businessData.business,
-      // businessData.dateAdded || "", // Ensure dateAdded is handled even if not available
-      businessData.documentUrl || "" // Handle possible undefined documentUrl
-    ];
-
-    // Generate embeddings
-    const model = 'multilingual-e5-large';
-    const embeddingsResult: any = await pc.inference.embed(
-      model,
-      textData, // Use the concatenated text fields
-      { inputType: 'passage', truncate: 'END' }
-    );
-
-    // Log the embeddings result to inspect the data structure
-    console.log("Embeddings result:", embeddingsResult);
-
-    // Check if embeddings were generated correctly
-    if (!embeddingsResult || embeddingsResult.length === 0) {
-      console.log("No embeddings generated.");
-      return NextResponse.json({ error: 'No embeddings generated' }, { status: 400 });
-    }
-    console.log(`The size of the embedding generated is: ${embeddingsResult[0].values.length}`);
-
-    // Adjust embedding size to match the Pinecone index (1024)
-    const adjustedEmbeddings = embeddingsResult.map((embedding: any, i: number) => {
-      // Ensure the embedding has a values array that contains numeric data
-      if (!Array.isArray(embedding.values) || embedding.values.length === 0) {
-        console.log(`Embedding ${i} does not contain valid values.`);
-        return []; // Handle invalid embedding
+      if (!response.values) {
+        throw new Error('Invalid embedding response from Pinecone');
       }
 
-      const embeddingLength = embedding.values.length;
-      console.log(`Original embedding size: ${embeddingLength}`);
+      embeddings.push(response.values);
+    }
+    return embeddings;
+  } catch (error) {
+    console.error('Error generating embeddings:', error);
+    throw new Error('Failed to generate embeddings');
+  }
+}
 
-      // Adjust the embedding length to match the Pinecone expected size (1024)
-      const adjusted = embedding.values.slice(0, 1024); // Slice embedding to 1024 if necessary
-      console.log(`Adjusted embedding ${i} size: ${adjusted.length}`);
-      return adjusted; // Ensure the values array is correctly passed
+export async function POST(req: NextRequest) {
+  // Ensure we always send JSON responses
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  try {
+    const auth = getAuth(req);
+    const userId = auth.userId;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers });
+    }
+
+    const { business } = await req.json();
+
+    if (!business || typeof business !== 'string') {
+      return NextResponse.json({ error: 'Invalid business name' }, { status: 400, headers });
+    }
+
+    const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, '_');
+    const businessRef = doc(db, `userDetails/${userId}/businesses`, safeBusinessName);
+
+    const businessSnapshot = await getDoc(businessRef);
+    if (!businessSnapshot.exists()) {
+      return NextResponse.json({ error: 'Business not found' }, { status: 404, headers });
+    }
+
+    const businessData = businessSnapshot.data();
+    if (!businessData.documentUrl) {
+      return NextResponse.json({ error: 'No document URL found' }, { status: 400, headers });
+    }
+
+    // Download and process PDF
+    const pdfBuffer = await axios.get(businessData.documentUrl, {
+      responseType: 'arraybuffer'
+    }).then(response => Buffer.from(response.data));
+
+    const pdfData = await pdf(pdfBuffer);
+
+    // Split text into chunks
+    const splitter = new CharacterTextSplitter({
+      chunkSize: 1024,
+      chunkOverlap: 128
     });
 
-    // Prepare embeddings for Pinecone (flatten the array structure)
-    const data = adjustedEmbeddings.map((embedding: any) => ({
-      id: Id, 
-      values: embedding, // Embedding values (the vector data)
+    const chunks = await splitter.splitText(pdfData.text);
+    const embeddings = await generateEmbeddings(chunks);
+
+    // Prepare vectors for Pinecone
+    const vectors = embeddings.map((embedding, index) => ({
+      id: `${userId}_${safeBusinessName}_${index}`,
+      values: embedding,
       metadata: {
         description: businessData.description,
         name: businessData.name,
         business: businessData.business,
-        dateAdded: businessData.dateAdded || "N/A", // Add fallback if the field is missing
-        documentUrl: businessData.documentUrl || "N/A", // Add fallback if the field is missing
-        imgUrl: businessData.imageUrl || "N/A", // Add fallback if the field is missing
+        dateAdded: businessData.dateAdded || new Date().toISOString(),
+        documentUrl: businessData.documentUrl,
+        imgUrl: businessData.imageUrl || null,
       },
     }));
 
-    // Log data structure to check before upserting
-    console.log("Data to be upserted:", JSON.stringify(data, null, 2));
-
-    // Check if data is empty
-    if (data.length === 0) {
-      console.log("No embeddings to upsert.");
-      return NextResponse.json({ error: 'No embeddings to upsert' }, { status: 400 });
-    }
-
-    // Insert embeddings into Pinecone
+    // Upsert to Pinecone
     const index = pc.index('dh', 'https://dh-y3557xk.svc.aped-4627-b74a.pinecone.io');
+    await index.upsert(vectors);
 
-    // Ensure you are calling the correct index and namespace
-    // Assuming `data[0]` contains the vector you want to upsert
-    const upsertResponse = await index.namespace('example-namespace1').upsert([data[0]]);
+    return NextResponse.json({
+      success: true,
+      message: 'Embeddings successfully created and stored'
+    }, { status: 200, headers });
 
-    // Log success response from Pinecone
-    console.log("Embeddings stored in Pinecone:", upsertResponse);
-
-    return NextResponse.json({ success: true, embeddings: data });
   } catch (error) {
-    console.error("Error in handler:", error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('Error:', error);
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Internal Server Error'
+    }, { status: 500, headers });
   }
 }
+

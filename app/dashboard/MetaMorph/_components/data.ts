@@ -32,17 +32,28 @@ import audio3 from '@/audio/audio3.mp3';
 import audio4 from '@/audio/audio4.mp3';
 
 type AudioAssets = {
-  audio1: string;
-  audio2: string;
-  audio3: string;
-  audio4: string;
+  Yashvir: string;  // Mapping audio1 to Yashvir
+  Numair: string;   // Mapping audio2 to Numair
+  Vritansh: string; // Mapping audio3 to Vritansh
+  Malik: string;   // Keeping audio4 to Malik
 };
 
 const audioAssets: AudioAssets = {
-  audio1,
-  audio2,
-  audio3,
-  audio4,
+  Yashvir: audio1,
+  Numair: audio2,
+  Vritansh: audio3,
+  Malik: audio4, // Keeping the audio4 unchanged
 };
 
 export { audioAssets };
+
+// import chatBotVideo from '@/video/chatBotVideo.mp4';
+
+// type VideoAssets = {
+//   chatBotVideo: string;
+//   };
+
+//   const videoAssets: VideoAssets = {
+//     chatBotVideo,
+//     };
+//     export { videoAssets };

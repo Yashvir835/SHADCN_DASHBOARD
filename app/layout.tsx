@@ -9,6 +9,9 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { ModeToggle } from "@/components/layout/dark-model-toggle";
 import LandingPage from "./MyComponents/landingPage";
+import ShineBorder from "@/components/ui/shine-border";
+import { BusinessProvider } from "@/app/context/BusinessContext";
+
 import {
   ClerkProvider,
   SignInButton,
@@ -59,7 +62,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
         >
           <SignedIn>
-     
+              <BusinessProvider>
           <SidebarProvider className="ml-8 my-0">
             <AppSidebar />
             <main className="flex-1 p-6">
@@ -85,19 +88,22 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
             </main>
           </SidebarProvider>
+                </BusinessProvider>
           </SignedIn>
+        </ThemeProvider>
           <SignedOut>
             <LandingPage />
-            <div className="fixed top-4 right-4 flex items-center space-x-4">
-              <ModeToggle />
+            <div className="fixed top-4 z-50 right-4 flex items-center space-x-4">
+              {/* <ModeToggle /> */}
               <SignInButton mode="modal">
-                <Button variant="outline">
+                <button>
+                  <ShineBorder color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}>
                   Sign In
-                </Button>
+                </ShineBorder>
+                </button>
               </SignInButton>
             </div>
           </SignedOut>
-        </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>

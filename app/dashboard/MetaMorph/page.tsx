@@ -12,25 +12,30 @@ import AvatarCreationForm from './_components/AvatarCreationForm'
 import Footer from './_components/Footer'
 import BackgroundAnimation from './_components/BackgroundAnimation'
 import { ModeToggle } from "@/components/layout/dark-model-toggle";
-
+import { useBusinessContext } from "@/app/context/BusinessContext"
+import {Document} from './type'
 const AvatarExperiencePage: React.FC = () => {
   const [showForm, setShowForm] = useState(false)
   const { user } = useUser()
   const router = useRouter()
   const { theme } = useTheme()
+  const { selectedBusiness: contextBusiness } = useBusinessContext()
 
   const handleCreateAvatar = () => {
     setShowForm(true)
   }
 
-  const handleSubmit = async (data: { business: string, avatarName: string, image: string, voice: string }) => {
+  const handleSubmit = async (data: { document: Document, avatarName: string, image: string, voice: string }) => {
     if (user) {
       try {
         
         const userId = user.id
-        const Id = `userDetails/${userId}/businesses/${data.business}`
+      
+        const safeBusinessName = contextBusiness? contextBusiness.replace(/[^a-zA-Z0-9]/g, '_'):'undefined'
+        const Id = `userDetails/${userId}/businesses/${safeBusinessName}`
         const userEmail = user.primaryEmailAddress?.emailAddress || 'No email available'
-        const response = await fetch(`/api/experience-avatar?userId=${Id}&business=${data.business}&avatarName=${data.avatarName}&image=${data.image}&voice=${data.voice}&userEmail=${userEmail}`)
+        console.log(`hi this is yashvir malik ${data.document}, this is audio${data.voice}`)
+        const response = await fetch(`/api/experience-avatar?userId=${Id}&document=${data.document}&avatarName=${data.avatarName}&image=${data.image}&voice=${data.voice}&userEmail=${userEmail}`)
         const responseData = await response.json()
 
         if (response.ok) {
@@ -50,8 +55,8 @@ const AvatarExperiencePage: React.FC = () => {
     <div className="relative min-h-screen p-6 space-y-8 animate-fade-in">
       {theme === 'dark' && <BackgroundAnimation />}
      
-      <Header />
-      <FeatureCards />
+      {/* <Header /> */}
+      {/* <FeatureCards /> */}
       <div className="mt-8">
         {!showForm ? (
           <div className="text-center animate-fade-in">

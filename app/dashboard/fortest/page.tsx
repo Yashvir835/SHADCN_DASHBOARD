@@ -19,6 +19,10 @@ export default function Page() {
   return (
     <div>
       <h1>Hi user with email {userEmail}</h1>
+      <video width="100%" controls>
+        <source src="/video/sample.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     </div>
   );
 }

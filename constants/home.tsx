@@ -85,8 +85,8 @@ export const Navitems = [
   //   items: [],
   // },
   {
-    title: 'Data Sphere',
-    url: '/dashboard/DataSphere',
+    title: 'Knowledge Base',
+    url: '/dashboard/KnowledgeBase',
     icon: 'database',
     shortcut: ['p', 'p'],
     isActive: false,
@@ -97,15 +97,20 @@ export const Navitems = [
     icon: 'billing',
     isActive: true,
     items: [
+      // {
+      //   title: 'Profile',
+      //   url: '/dashboard/profile',
+      //   shortcut: ['m', 'm'],
+      // },
+      // {
+      //   title: 'Data Nexus',
+      //   shortcut: ['l', 'l'],
+      //   url: '/dashboard/DataNexus',
+      // },
       {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        shortcut: ['m', 'm'],
-      },
-      {
-        title: 'Data Nexus',
+        title: 'Upload Document',
         shortcut: ['l', 'l'],
-        url: '/dashboard/DataNexus',
+        url: '/dashboard/UploadDocument',
       },
     ],
   },
