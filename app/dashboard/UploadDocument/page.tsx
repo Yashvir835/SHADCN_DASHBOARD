@@ -27,13 +27,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { handler } from "@/lib/UpsertVectorHandler"
 
 // Define the form schema using zod
+// Define the form schema using zod
 const formSchema = z.object({
-  documents: z.array(z.instanceof(File)).min(1, "Please upload at least one document"), // Required, with at least one file
-  textContent: z.string().min(1, "Please give some input").optional(), // Optional, but if provided, it should be a non-empty string
-  websiteUrl: z.string().url("Please enter a valid URL").optional(), // Optional URL
-}).refine(data => (data.documents && data.documents.length > 0) || data.textContent, {
+  documents: z.array(z.instanceof(File)), 
+  textContent: z.string().optional(), 
+  websiteUrl: z.string().optional(), // Optional
+}).refine(data => data.documents.length > 0 || data.textContent, {
   message: "Either upload a document or enter text content",
 });
+
 
 type FormValues = z.infer<typeof formSchema>
 

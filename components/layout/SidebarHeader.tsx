@@ -17,6 +17,7 @@ import { fetchBusinesses } from "@/lib/firebase";
 import { useUser } from "@clerk/nextjs";
 import { SidebarMenuButton, useSidebar } from "../ui/sidebar";
 import { useBusinessContext } from "@/app/context/BusinessContext";
+import Link from "next/link";
 
 // Company information object
 export const company = {
@@ -137,13 +138,19 @@ export function SidebarHeader() {
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => {
-            router.push("/dashboard/AddBusiness"); // Perform client-side navigation and redirect to the add bussiness page
-          }}>
-            <div className="flex items-center gap-2">
-              <Plus className="size-4" />
-              <span>Add Business</span>
-            </div>
+          <DropdownMenuItem 
+          // onClick={() => {
+          //   router.push("/dashboard/AddBusiness"); 
+          //   // Perform client-side navigation and redirect to the add bussiness page
+          // }}
+          >
+            <Link href='/dashboard/AddBusiness'>
+              <div className="flex items-center gap-2">
+                <Plus className="size-4" />
+                <span>Add Business</span>
+              </div>
+            </Link>
+          
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

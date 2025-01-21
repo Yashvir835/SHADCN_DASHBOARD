@@ -23,47 +23,40 @@ const items = [
     shortcut: ['d', 'd'],
     items: [],
   },
+
   {
-    title: 'Employee',
-    url: '/dashboard/employee',
-    icon: 'user',
-    shortcut: ['e', 'e'],
-    isActive: false,
-    items: [],
-  },
-  {
-    title: 'Product',
-    url: '/dashboard/product',
-    icon: 'product',
-    shortcut: ['p', 'p'],
-    isActive: false,
-    items: [],
-  },
-  {
-    title: 'Profile',
-    url: '/dashboard/profile',
-    icon: 'usePen',
-    shortcut: ['m', 'm'],
-    isActive: false,
-    items: [],
-  },
-  {
-    title: 'Login',
-    url: '/dashboard/login',
+    title: 'Knowlegde Base',
+    url: '/dashboard/KnowledgeBase',
     icon: 'login',
     shortcut: ['l', 'l'],
     isActive: false,
     items: [],
   },
-  
-  //  {
-  //   title: 'Kanban',
-  //   url: '/dashboard/kanban',
-  //   icon: 'kanban',
-  //   shortcut: ['k', 'k'],
-  //   isActive: false,
-  //   items: [],
-  // },
+  {
+    title: 'Upload Document',
+    url: '/dashboard/UploadDocument',
+    icon: 'login',
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [],
+  },
+  {
+    title: 'Persona',
+    url: '/dashboard/MetaMorph',
+    icon: 'login',
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [],
+  },
+  {
+    title: 'Add Bussiness',
+    url: '/dashboard/AddBusiness',
+    icon: 'login',
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [],
+  },
+
 ];
 
 export function ComboboxDemo() {
@@ -102,7 +95,8 @@ export function ComboboxDemo() {
         className="w-[200px] justify-between"
         onClick={() => setIsDropdownOpen(true)}
       >
-        {value ? items.find((item) => item.url === value)?.title : "🔍 Search..."}
+        {/* {value ? items.find((item) => item.url === value)?.title : "🔍 Search..."} */}
+        {"🔍 Search..."}
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
       {isDropdownOpen && (
