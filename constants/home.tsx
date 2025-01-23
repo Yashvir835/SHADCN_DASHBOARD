@@ -116,7 +116,7 @@ export const Navitems = [
   },
   {
     title: 'Persona',
-    url: '/dashboard/MetaMorph',
+    url: '/dashboard/Persona',
     icon: 'avtar',
     shortcut: ['k', 'k'],
     isActive: false,

@@ -199,3 +199,11 @@
   display: block;
 }
 
+
+/* Leaflet CSS */
+@import "https://unpkg.com/leaflet/dist/leaflet.css";
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}

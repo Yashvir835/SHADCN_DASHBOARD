@@ -42,7 +42,7 @@ const items = [
   },
   {
     title: 'Persona',
-    url: '/dashboard/MetaMorph',
+    url: '/dashboard/Persona',
     icon: 'login',
     shortcut: ['l', 'l'],
     isActive: false,

@@ -25,11 +25,20 @@ import {
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
 
+import { MapContainer as LeafletMapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   business: z.string().min(2, "Business name must be at least 2 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
-})
+  location: z.string().optional(), // User-entered location
+  latitude: z.string().optional(), // Latitude (as string to match Zod requirement)
+  longitude: z.string().optional(), // Longitude (as string to match Zod requirement)
+});
+
 
 type FormValues = z.infer<typeof formSchema> & {
   documentUrl?: string;
@@ -43,20 +52,27 @@ const AddBusiness: React.FC = () => {
   const [storedData, setStoredData] = useState<FormValues | null>(null)
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState({ title: "", description: "" })
-
+  const [mapCenter, setMapCenter] = useState<[number, number]>([51.505, -0.09]); // Default map center
+  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       business: "",
       description: "",
+      location: "",
+      latitude: "",
+      longitude: "",
     },
-  })
+  });
+
 
   const steps = [
     { id: "Step 1", name: "Basic Information", fields: ["name", "business"] },
     { id: "Step 2", name: "Additional Details", fields: ["description"] },
-    { id: "Step 3", name: "Review and Submit", fields: [] },
+    { id: "Step 3", name: "Location Information", fields: ["location", "latitude", "longitude"] }, // Updated
+    { id: "Step 4", name: "Review and Submit", fields: [] },
   ]
 
 
@@ -85,12 +101,14 @@ const AddBusiness: React.FC = () => {
       const businessRef = doc(db, `userDetails/${user.id}/businesses`, safeBusinessName);
       const businessSnapshot = await getDoc(businessRef);
 
-      // New data object for the business
       const newBusinessData = {
-        name: data.name,                // User's name
-        business: data.business,        // Business name entered by the user
-        description: data.description,  // Business description
-        dateAdded: currentDate,         // The current date (in YYYY-MM-DD format)
+        name: data.name,
+        business: data.business,
+        description: data.description,
+        location: data.location,   // User-entered location
+        latitude: data.latitude,   // Latitude of the selected location
+        longitude: data.longitude, // Longitude of the selected location
+        dateAdded: currentDate,
       };
 
       // Add or update the business 
@@ -133,6 +151,47 @@ const AddBusiness: React.FC = () => {
       setCurrentStep((step) => step - 1)
     }
   }
+  const ChangeMapView = ({ center }: { center: [number, number] }) => {
+    const map = useMap();
+    useEffect(() => {
+      map.setView(center, 13);
+    }, [center, map]);
+    return null;
+  };
+  const customIcon = new L.Icon({
+    iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    shadowSize: [41, 41],
+  });
+
+
+  const searchLocation = async () => {
+    const location = form.getValues("location");
+    if (!location) return;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json`
+      );
+      const results = await response.json();
+      if (results.length > 0) {
+        const { lat, lon } = results[0];
+        const newCenter: [number, number] = [parseFloat(lat), parseFloat(lon)];
+        setMapCenter(newCenter);
+        setMarkerPosition(newCenter);
+        form.setValue("latitude", lat);
+        form.setValue("longitude", lon);
+      } else {
+        showAlert("Error", "Couldn't find the location. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      showAlert("Error", "Failed to search for location. Please try again.");
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -211,14 +270,51 @@ const AddBusiness: React.FC = () => {
             />
           )}
 
-
-
           {currentStep === 2 && (
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Search Location</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center space-x-2">
+                        <Input placeholder="Enter address" {...field} />
+                        <Button type="button" onClick={searchLocation}>Search</Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="h-96 mt-4">
+                <LeafletMapContainer
+                  center={mapCenter as L.LatLngExpression}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  {markerPosition && <Marker position={markerPosition as L.LatLngExpression} icon={customIcon} />}
+                  <ChangeMapView center={mapCenter} />
+                </LeafletMapContainer>
+              </div>
+            </div>
+          )}
+
+
+          {currentStep === 3 && (
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Review Your Information</h3>
               <p><strong>Name:</strong> {form.getValues("name")}</p>
               <p><strong>Business:</strong> {form.getValues("business")}</p>
               <p><strong>Description:</strong> {form.getValues("description")}</p>
+              <p><strong>Description:</strong> {form.getValues("location")}</p>
+
             </div>
           )}
 
@@ -236,7 +332,7 @@ const AddBusiness: React.FC = () => {
                 Next
               </Button>
             )}
-            {currentStep == 2 && (
+            {currentStep == 3 && (
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>

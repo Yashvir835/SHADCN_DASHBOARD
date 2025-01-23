@@ -73,7 +73,7 @@ const AvatarExperiencePage: React.FC = () => {
           <AvatarCreationForm onSubmit={handleSubmit} />
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
