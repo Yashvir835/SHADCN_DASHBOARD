@@ -87,7 +87,7 @@ export function ComboboxDemo() {
   }
 
   return (
-    <div className="hidden md:block ">
+    <div className="hidden md:block z-10 ">
       <Button
         variant="outline"
         role="combobox"

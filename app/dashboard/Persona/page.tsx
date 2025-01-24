@@ -1,19 +1,19 @@
 "use client"
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from 'lucide-react'
-import { useTheme } from 'next-themes'
-import Header from './_components/Header'
-import FeatureCards from './_components/FeatureCards'
-import AvatarCreationForm from './_components/AvatarCreationForm'
-import Footer from './_components/Footer'
-import BackgroundAnimation from './_components/BackgroundAnimation'
-import { ModeToggle } from "@/components/layout/dark-model-toggle";
+import { ArrowRight } from "lucide-react"
+import { useTheme } from "next-themes"
+import Header from "./_components/Header"
+import FeatureCards from "./_components/FeatureCards"
+import AvatarCreationForm from "./_components/AvatarCreationForm"
+import Footer from "./_components/Footer"
+import { ModeToggle } from "@/components/layout/dark-model-toggle"
 import { useBusinessContext } from "@/app/context/BusinessContext"
-import {Document} from './type'
+import { Document } from "./type"
+
 const AvatarExperiencePage: React.FC = () => {
   const [showForm, setShowForm] = useState(false)
   const { user } = useUser()
@@ -25,42 +25,49 @@ const AvatarExperiencePage: React.FC = () => {
     setShowForm(true)
   }
 
-  const handleSubmit = async (data: { document: Document, avatarName: string, image: string, voice: string }) => {
+  const handleSubmit = async (data: { document: Document; avatarName: string; image: string; voice: string; language: string }) => {
     if (user) {
       try {
-        
         const userId = user.id
-      
-        const safeBusinessName = contextBusiness? contextBusiness.replace(/[^a-zA-Z0-9]/g, '_'):'undefined'
+        const safeBusinessName = contextBusiness ? contextBusiness.replace(/[^a-zA-Z0-9]/g, "_") : "undefined"
+
         const Id = `userDetails/${userId}/businesses/${safeBusinessName}`
-        const userEmail = user.primaryEmailAddress?.emailAddress || 'No email available'
-        console.log(`hi this is yashvir malik ${data.document}, this is audio${data.voice}`)
-        const response = await fetch(`/api/experience-avatar?userId=${Id}&document=${data.document}&avatarName=${data.avatarName}&image=${data.image}&voice=${data.voice}&userEmail=${userEmail}`)
+        const userEmail = user.primaryEmailAddress?.emailAddress || "No email available"
+        console.log(`hi this is yashvir malik ${data.document.name}, this is audio${data.voice} , this is language ${data.avatarName} , ${data.language}`)
+        const response = await fetch(
+          `/api/experience-avatar?userId=${Id}&document=${data.document.name}&avatarName=${data.avatarName}&image=${data.image}&voice=${data.voice}&userEmail=${userEmail}&language=${data.language}`
+        )
         const responseData = await response.json()
 
         if (response.ok) {
           router.push(responseData.redirectUrl)
         } else {
-          console.error('Error:', responseData.message)
-          alert('Something Wrong happen please refresh and made request again')
+          console.error("Error:", responseData.message)
+          alert("Something went wrong, please refresh and try again.")
         }
       } catch (error) {
-        console.error('Error:', error)
-        alert('Something Wrong happen please refresh and made request again')
+        console.error("Error:", error)
+        alert("Something went wrong, please refresh and try again.")
       }
     }
   }
 
   return (
-    <div className="relative min-h-screen p-6 space-y-8 animate-fade-in">
-      {theme === 'dark' && <BackgroundAnimation />}
-     
-      {/* <Header /> */}
-      {/* <FeatureCards /> */}
-      <div className="mt-8">
+    <div className="relative min-h-screen overflow-x-hidden">
+            {/* Background Video */}
+      {/* <div className="fixed inset-0 w-full h-full overflow-hidden">
+        <video className="absolute min-h-full min-w-full object-cover" autoPlay loop muted playsInline>
+          <source src="/video/Persona.mp4" type="video/mp4" />
+        </video>
+      </div> */}
+
+      {/* Content Overlay */}
+      <div className="relative ">
         {!showForm ? (
           <div className="text-center animate-fade-in">
-            <p className="text-xl mb-4">Ready to experience the future of customer interaction?</p>
+            <p className="text-xl mb-4 text-black">
+              Ready to experience the future of customer interaction?
+            </p>
             <Button
               onClick={handleCreateAvatar}
               size="lg"
@@ -73,10 +80,8 @@ const AvatarExperiencePage: React.FC = () => {
           <AvatarCreationForm onSubmit={handleSubmit} />
         )}
       </div>
-      {/* <Footer /> */}
     </div>
   )
 }
 
 export default AvatarExperiencePage
-

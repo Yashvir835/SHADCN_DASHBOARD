@@ -47,7 +47,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <html lang="en">
         <body
           className={cn(
-            "min-h-screen w-full bg-background text-foreground",
+            "min-h-screen overflow-x-hidden w-full bg-background text-foreground",
             {
               "debug-screens": process.env.NODE_ENV === "development",
             },
@@ -72,14 +72,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 {/* having issue in this component */}
                 {/* <CalenderComponent /> */}
               </div>
+              <div>
+
+                
+              </div>
               <div className="absolute top-0 right-0 p-4 flex space-x-4">
                 <ComboboxDemo />
                 {/* <DropdownMenuDemo /> */}
            
                 
             
-                  <UserButton />
-                <ModeToggle />
+                  <UserButton  />
+                <ModeToggle  />
 
               </div>
 
