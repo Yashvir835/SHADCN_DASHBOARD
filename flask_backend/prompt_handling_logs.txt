@@ -1,0 +1,4 @@
+Embedding Creation execution: 1.0304510593414307
+Pinecone Query execution: 2.3841702938079834
+Classification execution: 1.5527291297912598
+Response Generation execution: 7.867813110351562e-06
