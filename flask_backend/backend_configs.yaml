@@ -1,0 +1,6 @@
+groq_model_name: "llama-3.2-90b-vision-preview"
+huggingface_embedding_model: "intfloat/multilingual-e5-Large"
+pinecone_top_k: 3
+llm_temperature: 1.2
+openai_model_name: "gpt-4o"
+OpenaiEmbeddings: 'text-embedding-ada-002'

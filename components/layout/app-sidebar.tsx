@@ -1,5 +1,5 @@
 'use client'
-import {useState} from 'react';
+import { useState } from 'react';
 import Link from "next/link";
 import { ChevronRight } from 'lucide-react';
 import { Navitems, iconMap } from "@/constants/home";
@@ -25,13 +25,13 @@ export function AppSidebar() {
 
 
   return (
-    <Sidebar className="bg-off-white w-[235px]" variant="sidebar" collapsible="icon">
+    <Sidebar className="bg-off-white w-[275px]" variant="sidebar" collapsible="icon">
       <SidebarHeader />
       <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
           <SidebarGroupLabel className="text-sm mb-2">
             {selectedBusiness ? `${selectedBusiness} Overview` : "Overview"}
-            </SidebarGroupLabel>
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {Navitems.map((item) => (

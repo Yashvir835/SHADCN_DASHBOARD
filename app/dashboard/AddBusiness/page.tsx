@@ -25,10 +25,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
 
-import { MapContainer as LeafletMapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { MapContainer as LeafletMapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -54,7 +54,7 @@ const AddBusiness: React.FC = () => {
   const [alertDialogContent, setAlertDialogContent] = useState({ title: "", description: "" })
   const [mapCenter, setMapCenter] = useState<[number, number]>([51.505, -0.09]); // Default map center
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
-  
+  const [position, setPosition] = useState<[number, number] | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -168,6 +168,46 @@ const AddBusiness: React.FC = () => {
   });
 
 
+  //  this is Custom component to handle map click events
+  const MapClickHandler = () => {
+    const [address, setAddress] = useState<string>("");
+
+    useMapEvents({
+      click: async (event: L.LeafletMouseEvent) => {
+        const { lat, lng } = event.latlng;
+
+        // Set marker and position
+        setMarkerPosition([lat, lng]);
+        setPosition([lat, lng]);
+
+        // Update form values for latitude and longitude
+        form.setValue("latitude", lat.toString());
+        form.setValue("longitude", lng.toString());
+
+        // Reverse Geocoding: Fetch address from the lat/lng
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const data = await response.json();
+
+          if (data && data.display_name) {
+            setAddress(data.display_name); // Update address state
+            form.setValue("location", data.display_name); // Optional: Update address in the form
+          } else {
+            setAddress("Address not found");
+          }
+        } catch (error) {
+          console.error("Reverse geocoding failed:", error);
+          setAddress("Error fetching address");
+        }
+      },
+    });
+
+    return null; // This component doesn't render anything
+  };
+
+
   const searchLocation = async () => {
     const location = form.getValues("location");
     if (!location) return;
@@ -194,23 +234,39 @@ const AddBusiness: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Heading title="Add New Business" description="Add or update your details" />
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* CHANGE: Adjusted text sizes for better responsiveness */}
+      <Heading
+        title="Add New Business"
+        description="Add or update your details"
+      />
       <Separator className="my-6" />
 
-      <div className="mb-8">
-        <ol className="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
+      {/* CHANGE: Made the steps more responsive */}
+      {/*  in this div we can add overflow-x-auto to make the heading scrollable */}
+      <div className="mb-8 ">
+        <ol className="flex items-center w-full min-w-max text-xs md:text-md md:text-base font-medium text-center text-gray-500 dark:text-gray-400">
           {steps.map((step, index) => (
-            <li key={step.id} className={`flex md:w-full items-center ${index === currentStep ? 'text-blue-600 dark:text-blue-500' : ''} ${index < currentStep ? 'text-green-600 dark:text-green-500' : ''} sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-6 xl:after:mx-10 dark:after:border-gray-700`}>
-              <span className="flex items-center after:content-['/'] sm:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+            <li
+              key={step.id}
+              className={`flex items-center ${index === currentStep ? "text-blue-600 dark:text-blue-500" : ""} ${index < currentStep ? "text-green-600 dark:text-green-500" : ""} after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden md:after:inline-block after:mx-2 md:after:mx-4 xl:after:mx-6 dark:after:border-gray-700`}
+            >
+              <span className="flex items-center after:content-['/'] md:after:hidden after:mx-2 after:text-gray-200 dark:after:text-gray-500">
                 {index < currentStep ? (
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-3 h-3 md:w-3.5 md:h-3.5 mr-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
                   </svg>
                 ) : (
-                  <span className="mr-2">{index + 1}</span>
+                  <span className="mr-2">{index + 1} Step</span>
                 )}
-                {step.name}
+                {/* CHANGE: Hide step names on mdaller screens */}
+                <span className="hidden md:inline">{step.name}</span>
               </span>
             </li>
           ))}
@@ -258,11 +314,7 @@ const AddBusiness: React.FC = () => {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Tell us about yourself..."
-                      className="resize-none"
-                      {...field}
-                    />
+                    <Textarea placeholder="Tell us about yourself..." className="resize-none" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -279,9 +331,12 @@ const AddBusiness: React.FC = () => {
                   <FormItem>
                     <FormLabel>Search Location</FormLabel>
                     <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Input placeholder="Enter address" {...field} />
-                        <Button type="button" onClick={searchLocation}>Search</Button>
+                      {/* CHANGE: Made the search input and button stack on mdaller screens */}
+                      <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                        <Input placeholder="Enter address" {...field} className="w-full md:w-auto" />
+                        <Button type="button" onClick={searchLocation} className="w-full md:w-auto">
+                          Search
+                        </Button>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -289,51 +344,64 @@ const AddBusiness: React.FC = () => {
                 )}
               />
 
-              <div className="h-96 mt-4">
+              {/* CHANGE: Adjusted map height for better responsiveness */}
+              <div className="h-64 md:h-96 mt-4 relative z-0 overflow-hidden">
                 <LeafletMapContainer
                   center={mapCenter as L.LatLngExpression}
                   zoom={13}
                   style={{ height: "100%", width: "100%" }}
+
                 >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
                   {markerPosition && <Marker position={markerPosition as L.LatLngExpression} icon={customIcon} />}
+                  <MapClickHandler /> {/* Handles map clicks */}
+
                   <ChangeMapView center={mapCenter} />
                 </LeafletMapContainer>
               </div>
             </div>
           )}
 
-
           {currentStep === 3 && (
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Review Your Information</h3>
-              <p><strong>Name:</strong> {form.getValues("name")}</p>
-              <p><strong>Business:</strong> {form.getValues("business")}</p>
-              <p><strong>Description:</strong> {form.getValues("description")}</p>
-              <p><strong>Description:</strong> {form.getValues("location")}</p>
+              <p>
+                <strong>Name:</strong> {form.getValues("name")}
+              </p>
+              <p>
+                <strong>Business:</strong> {form.getValues("business")}
+              </p>
+              <p>
+                <strong>Description:</strong> {form.getValues("description")}
+              </p>
+              <p>
+                <strong>Location:</strong> {form.getValues("location")}
+              </p>
 
             </div>
           )}
 
-          <div className="flex justify-between">
+          {/* CHANGE: Made buttons stack on mdaller screens */}
+          <div className="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0">
             <Button
               type="button"
               onClick={prevStep}
               disabled={currentStep === 0}
               variant="outline"
+              className="w-full md:w-auto"
             >
               Previous
             </Button>
             {currentStep < steps.length - 1 && (
-              <Button type="button" onClick={nextStep}>
+              <Button type="button" onClick={nextStep} className="w-full md:w-auto">
                 Next
               </Button>
             )}
-            {currentStep == 3 && (
-              <Button type="submit" disabled={loading}>
+            {currentStep === 3 && (
+              <Button type="submit" disabled={loading} className="w-full md:w-auto">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -352,21 +420,11 @@ const AddBusiness: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{alertDialogContent.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {alertDialogContent.description}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{alertDialogContent.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction>
-              {alertDialogContent.title === 'Error' ? (
-                // Action for 'Error' title
-                <span >Ok</span>
-              ) : (
-                // Link for other titles
-                <Link href='/'>
-                  Go to Dashboard
-                </Link>
-              )}
+              {alertDialogContent.title === "Error" ? <span>Ok</span> : <Link href="/">Go to Dashboard</Link>}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

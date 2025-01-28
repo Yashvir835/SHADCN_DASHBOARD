@@ -205,3 +205,84 @@ export const deleteDocument = async (userId: string, businessName: string, fileN
     throw new Error("Failed to delete document")
   }
 }
+
+// this function is used to add the customer to the firestore for the particular business
+export async function addCustomer(
+  customerData: any,
+  businessName: string,
+  userId: string
+) {
+  try {
+    // Create a sanitized business name for the path
+    const safeBusinessName = businessName.replace(/[^a-zA-Z0-9]/g, "_");
+
+    // Define the Firestore document path for the customer
+    const customerRef = doc(
+      db,
+      `userDetails/${userId}/businesses/${safeBusinessName}/customers/${customerData.phoneNumber}`
+    );
+
+    // Add or update the customer data
+    await setDoc(customerRef, {
+      ...customerData,
+      createdAt: new Date(), // Add timestamp
+    });
+
+    console.log("Customer added successfully!");
+  } catch (error) {
+    console.error("Error adding customer: ", error);
+    throw new Error("Failed to add customer");
+  }
+}
+
+
+// function to get the customers for the particular business
+export async function getCustomersByBusiness(
+  userId: string,
+  businessName: string
+): Promise<any[]> {
+  try {
+    // Sanitize the business name for consistent path formatting
+    const safeBusinessName = businessName.replace(/[^a-zA-Z0-9]/g, "_");
+
+    // Define the Firestore collection path for the customers
+    const customersCollectionRef = collection(
+      db,
+      `userDetails/${userId}/businesses/${safeBusinessName}/customers`
+    );
+
+    // Fetch all documents from the collection
+    const querySnapshot = await getDocs(customersCollectionRef);
+
+    // Map through the documents and extract data
+    const customers = querySnapshot.docs.map((doc) => ({
+      id: doc.id, // The document ID (e.g., phone number)
+      ...doc.data(), // The actual customer data
+    }));
+
+    console.log("Fetched customers:", customers);
+    return customers; // Return an array of customer details
+  } catch (error) {
+    console.error("Error fetching customers: ", error);
+    throw new Error("Failed to fetch customer details");
+  }
+}
+
+
+// function to delete the customer from the firestore
+export const deleteCustomer = async (userId: string, businessName: string, customerId: string) => {
+  const safeBusinessName = businessName.replace(/[^a-zA-Z0-9]/g, "_") // Sanitize business name
+  const customerDocRef = doc(
+    db,
+    `userDetails/${userId}/businesses/${safeBusinessName}/customers`, // Path to customer document
+    customerId // The unique customer ID
+  )
+
+  try {
+    await deleteDoc(customerDocRef) // Delete the customer document
+    console.log(`Customer with ID ${customerId} deleted successfully`)
+  } catch (error) {
+    console.error("Error deleting customer:", error)
+    throw new Error("Failed to delete customer")
+  }
+}

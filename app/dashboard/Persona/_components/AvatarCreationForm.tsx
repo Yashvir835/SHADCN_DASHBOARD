@@ -192,20 +192,23 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
       case 1:
         return (
           <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium">Select Language</h3>
-              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languages.map((language) => (
-                    <SelectItem key={language} value={language}>
-                      {language}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="mx-0 px-0">
+              <div className="flex items-center justify-end gap-2">
+
+                <h3 className="text-lg font-medium">Select Language</h3>
+                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                  <SelectTrigger className="w-[160px] md:w-[200px] border-zinc-700">
+                    <SelectValue placeholder="Select Language" />
+                  </SelectTrigger>
+                  <SelectContent className="w-auto p-2">
+                    {languages.map((language) => (
+                      <SelectItem key={language} value={language}>
+                        {language}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -315,11 +318,11 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Your Avatar...
+                  Fetching...
                 </>
               ) : (
                 <>
-                  Experience Your Avatar <ArrowRight className="ml-2" />
+                  Submit <ArrowRight className="ml-2" />
                 </>
               )}
             </Button>
