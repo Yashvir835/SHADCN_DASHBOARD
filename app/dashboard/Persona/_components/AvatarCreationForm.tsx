@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2, AlertCircle, ArrowRight, ArrowLeft, Play, Pause } from "lucide-react"
@@ -13,7 +13,8 @@ import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
 import { Heading } from "@/components/ui/heading"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 interface AvatarCreationFormProps {
   onSubmit: (data: {
     document: Document
@@ -44,7 +45,19 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
   const { selectedBusiness: contextBusiness } = useBusinessContext()
   const [documents, setDocuments] = useState<Document[]>([])
   const [fetchingDocuments, setFetchingDocuments] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
 
+  const filteredLanguages = useMemo(() => {
+    return languages.filter((lang) => lang.toLowerCase().includes(searchQuery.toLowerCase()))
+  }, [searchQuery])
+
+  useEffect(() => {
+    if (filteredLanguages.length > 0) {
+      setSelectedLanguage(filteredLanguages[0])
+    }
+  }, [filteredLanguages])
+
+  
   useEffect(() => {
     const fetchDocuments = async () => {
       if (!user || !contextBusiness) {
@@ -193,23 +206,37 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
         return (
           <div className="space-y-8">
             <div className="mx-0 px-0">
-              <div className="flex items-center justify-end gap-2">
-
-                <h3 className="text-lg font-medium">Select Language</h3>
+              <div className="flex flex-row items-start w-1/2  gap-2 ml-auto">
+                <h3 className="text-lg font-medium ">Select Language</h3>
+                <Input
+                  type="text"
+                  placeholder="Search languages..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    if (filteredLanguages.length > 0) {
+                      setSelectedLanguage(filteredLanguages[0])
+                    }
+                  }}
+                  className="mb-2 border-zinc-700"
+                />
                 <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                  <SelectTrigger className="w-[160px] md:w-[200px] border-zinc-700">
+                  <SelectTrigger className="border-zinc-700">
                     <SelectValue placeholder="Select Language" />
                   </SelectTrigger>
-                  <SelectContent className="w-auto p-2">
-                    {languages.map((language) => (
-                      <SelectItem key={language} value={language}>
-                        {language}
-                      </SelectItem>
-                    ))}
+                  <SelectContent>
+                    <ScrollArea className="h-[200px]">
+                      {filteredLanguages.map((language) => (
+                        <SelectItem key={language} value={language}>
+                          {language}
+                        </SelectItem>
+                      ))}
+                    </ScrollArea>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {avatarProfiles.map((profile) => (

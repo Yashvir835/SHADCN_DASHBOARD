@@ -1,5 +1,5 @@
 // utils/fetchAndStoreData.ts
-
+"use client"
 export const handler = async (business: string) => {
   let loading = true;
   let error: string | null = null;
@@ -18,6 +18,8 @@ export const handler = async (business: string) => {
       throw new Error('Failed to fetch or store data');
     }
     const data = await res.json();
+    console.log('Document response:', data);
+
     success = true;
   } catch (err: any) {
     error = err.message;

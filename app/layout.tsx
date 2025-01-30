@@ -11,6 +11,7 @@ import { ModeToggle } from "@/components/layout/dark-model-toggle";
 import LandingPage from "./MyComponents/landingPage";
 import ShineBorder from "@/components/ui/shine-border";
 import { BusinessProvider } from "@/app/context/BusinessContext";
+import { Toaster } from "@/components/ui/toaster"
 
 import {
   ClerkProvider,
@@ -91,6 +92,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
 
             </main>
+                  <Toaster />
           </SidebarProvider>
                 </BusinessProvider>
           </SignedIn>

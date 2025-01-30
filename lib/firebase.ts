@@ -11,7 +11,9 @@ import {
   ref,
   uploadBytes,
   getDownloadURL,
-  deleteObject
+  deleteObject,
+  listAll,
+  getMetadata
 } from "firebase/storage";
 import { jsPDF } from "jspdf"
 
@@ -284,5 +286,47 @@ export const deleteCustomer = async (userId: string, businessName: string, custo
   } catch (error) {
     console.error("Error deleting customer:", error)
     throw new Error("Failed to delete customer")
+  }
+}
+
+
+// function to fetch all documents for the particular business
+interface DocumentData {
+  id: string
+  name: string
+  url: string
+  uploadDate: string
+}
+export const fetchDocuments = async (
+  userId: string,
+  selectedBusiness: string,
+  storage: any
+): Promise<DocumentData[]> => {
+  if (!userId || !selectedBusiness) {
+    throw new Error("User ID and business name are required.")
+  }
+
+  try {
+    const safeBusinessName = selectedBusiness.replace(/[^a-zA-Z0-9]/g, "_")
+    const folderRef = ref(storage, `${userId}/${safeBusinessName}/documents`)
+
+    const fileList = await listAll(folderRef)
+    const documentPromises = fileList.items.map(async (item, index) => {
+      const metadata = await getMetadata(item)
+      const url = await getDownloadURL(item)
+      return {
+        id: `doc${index + 1}`,
+        name: item.name,
+        url: url,
+        uploadDate: metadata.timeCreated
+          ? new Date(metadata.timeCreated).toLocaleDateString()
+          : "Unknown",
+      }
+    })
+
+    return await Promise.all(documentPromises)
+  } catch (err) {
+    console.error("Error fetching documents:", err)
+    throw new Error("Failed to fetch documents.")
   }
 }

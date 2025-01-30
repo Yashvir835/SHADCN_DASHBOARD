@@ -7,7 +7,7 @@ import { db, storage } from "@/app/firebase/firebase-config"
 import { ref, listAll, getMetadata, getDownloadURL } from "firebase/storage"
 import { columns } from "./_components/columns"
 import { DataTable } from "./_components/data-table"
-
+import { fetchDocuments } from "@/lib/firebase"
 interface Document {
   id: string
   name: string
@@ -25,7 +25,7 @@ export default function StoredDataPage() {
   const [refreshTrigger,setRefreshTrigger] = useState(false) // this will add refresh trigger when user click on the delete button 
 
   useEffect(() => {
-    const fetchDocuments = async () => {
+    const getDocuments = async () => {
       if (!user || !selectedBusiness) {
         setError("Please select a business first.")
         setLoading(false)
@@ -35,22 +35,8 @@ export default function StoredDataPage() {
       try {
         const userId = user.id
         const safeBusinessName = selectedBusiness.replace(/[^a-zA-Z0-9]/g, '_')
-        const folderRef = ref(storage, `${userId}/${safeBusinessName}/documents`)
-
-        const fileList = await listAll(folderRef)
-        const documentPromises = fileList.items.map(async (item, index) => {
-          const metadata = await getMetadata(item)
-          const url = await getDownloadURL(item)
-          return {
-            id: `doc${index + 1}`,
-            name: item.name,
-            url: url,
-            uploadDate: metadata.timeCreated ? new Date(metadata.timeCreated).toLocaleDateString() : 'Unknown'
-          }
-        })
-
-        const documents = await Promise.all(documentPromises)
-        setDocuments(documents)
+        const docs = await fetchDocuments(user.id, selectedBusiness, storage)
+        setDocuments(docs)
       } catch (err) {
         console.error("Error fetching documents:", err)
         setError("Failed to fetch documents. Please try again.")
@@ -59,7 +45,7 @@ export default function StoredDataPage() {
       }
     }
 
-    fetchDocuments()
+    getDocuments()
   }, [user, selectedBusiness, refreshTrigger])
 
   if (loading) {

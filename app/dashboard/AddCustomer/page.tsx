@@ -52,14 +52,16 @@ export default function AddCustomerPage() {
       console.log(values)
       if (user) {
         await addCustomer(values, selectedBusiness ? selectedBusiness : " ", user.id)
-        console.log("Customer added successfully")
+        toast({
+          title: "Success",
+          description: "Customer added successfully",
+        })
+        form.reset()
+      } else {
+        throw new Error("User not authenticated")
       }
-      toast({
-        title: "Customer added successfully",
-        description: "The customer has been added to the database.",
-      })
-      form.reset()
     } catch (error) {
+      console.error("Error adding customer:", error)
       toast({
         title: "Error",
         description: "There was an error adding the customer. Please try again.",
@@ -71,11 +73,11 @@ export default function AddCustomerPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 md:mr-4 lg:mr-6">
       <h1 className="text-2xl font-bold mb-5">Add New Customer for {selectedBusiness}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mr-4 lg:mr-6">
             <FormField
               control={form.control}
               name="firstName"
@@ -103,33 +105,36 @@ export default function AddCustomerPage() {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input placeholder="123 Main St, City, Country" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="+1234567890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mr-4 lg:mr-6">
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input className="w-full" placeholder="123 Main St, City, Country" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input className="w-full" placeholder="+1234567890" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mr-4 lg:mr-6">
             <FormField
               control={form.control}
               name="checkInDate"
@@ -195,19 +200,22 @@ export default function AddCustomerPage() {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email (Optional)</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="john.doe@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="md:mr-4 lg:mr-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="john.doe@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+       <div className="md:mr-4 lg:mr-6">
           <FormField
             control={form.control}
             name="specialRequests"
@@ -228,6 +236,7 @@ export default function AddCustomerPage() {
               </FormItem>
             )}
           />
+       </div>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Adding Customer..." : "Add Customer"}
           </Button>
