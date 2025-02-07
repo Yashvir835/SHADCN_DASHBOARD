@@ -62,7 +62,7 @@ export const iconMap: IconMap = {
 export const Navitems = [
   {
     title: 'Dashboard',
-    url: "/",
+    url: "/dashboard",
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],

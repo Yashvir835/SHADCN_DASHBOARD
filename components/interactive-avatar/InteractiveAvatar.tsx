@@ -326,10 +326,10 @@
 //   // New function to handle text-based chat
 //   const handleTextSubmit = async () => {
 //     if (!textInput.trim() || isTextInputDisabled) return;
-  
+
 //     try {
 //       setIsTextInputDisabled(true)
-  
+
 //       // Send text as JSON
 //       const response = await fetch("http://127.0.0.1:5000/text_chat", {
 //         method: "POST",
@@ -338,23 +338,23 @@
 //         },
 //         body: JSON.stringify({ user_input: textInput })
 //       })
-  
+
 //       if (!response.ok) {
 //         throw new Error("Failed to fetch response from AI agent.")
 //       }
-  
+
 //       const data = await response.json()
-      
+
 //       // Update messages
 //       setMessages((prevMessages) => [
 //         ...prevMessages,
 //         { role: "user", content: data.user_input },
 //         { role: "assistant", content: data.response }
 //       ])
-  
+
 //       // Clear text input
 //       setTextInput("")
-  
+
 //       // Speak the response if avatar is ready
 //       if (data.response && avatar.current) {
 //         await speakResponse(data.response)
@@ -981,9 +981,8 @@ export default function InteractiveAvatar() {
                     {messages.map((message, index) => (
                       <div key={index} className={`mb-4 ${message.role === "user" ? "text-right" : "text-left"}`}>
                         <div
-                          className={`inline-block p-3 rounded-lg ${
-                            message.role === "user" ? "bg-blue-600 text-white" : "bg-gray-600 text-blue-100"
-                          }`}
+                          className={`inline-block p-3 rounded-lg ${message.role === "user" ? "bg-blue-600 text-white" : "bg-gray-600 text-blue-100"
+                            }`}
                         >
                           {message.content}
                         </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { GalleryVerticalEnd, ChevronsUpDown, Plus } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { fetchBusinesses } from "@/lib/firebase";
 import { useUser } from "@clerk/nextjs";
@@ -31,7 +31,7 @@ export function SidebarHeader() {
   // State variables
   const { selectedBusiness, setSelectedBusiness } = useBusinessContext();
 
-  const router = useRouter();
+  
 
   const [businesses, setBusinesses] = useState<string[]>([]);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
@@ -77,13 +77,7 @@ export function SidebarHeader() {
     sessionStorage.setItem("selectedBusiness", business); // Save to localStorage
   };
 
-  // Function to show alert dialog
-  const showAlertDialog = (title: string, description: string) => {
-    setAlertContent({ title, description });
-    setAlertDialogOpen(true);
-
-
-  };
+  
 
   // Function to handle alert dialog close
   const handleAlertClose = () => {

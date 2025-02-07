@@ -3,13 +3,13 @@ from flask_cors import CORS
 import whisper
 import os
 import tempfile
-from pydub import AudioSegment
-from pydub.playback import play
+# from pydub import AudioSegment
+# from pydub.playback import play
 from context_aware_prompt_handler import handle_query
 import warnings
 from werkzeug.utils import secure_filename
-from pydub import AudioSegment
-from pydub.playback import play
+# from pydub import AudioSegment
+# from pydub.playback import play
 import tempfile
 
 def play_audio(file_storage):

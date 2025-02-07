@@ -5,28 +5,20 @@ import { RecentSales } from "./RecentSales";
 
 function Graph() {
   return (
-    <div className="flex flex-wrap mt-2 w-full">
- <div className="w-full min-h-[300px] lg:w-1/2 p-2">       
-          <BarChart />
-        
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2 w-full">
+      <div className="p-2">
+        <BarChart />
       </div>
-
-      <div className="w-full lg:w-1/2 p-2">
-        <div className="border rounded-lg min-h-[450px] flex items-center text-lg">
+      <div className="p-2">
+        <div className="border rounded-lg flex items-center text-lg p-4">
           <RecentSales />
         </div>
       </div>
-
-    <div className="w-full min-h-[300px] lg:w-1/2 p-2">
-        
-          <AreaChart />
-        
+      <div className="p-2">
+        <AreaChart />
       </div>
-
-      <div className="w-full min-h-[300px] lg:w-1/2 p-2">
-       
-          <PieChart />
-
+      <div className="p-2">
+        <PieChart />
       </div>
     </div>
   );

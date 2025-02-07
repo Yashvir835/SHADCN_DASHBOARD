@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Heading } from "@/components/ui/heading"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+// import { ScrollArea } from "@/components/ui/scroll-area"
 interface AvatarCreationFormProps {
   onSubmit: (data: {
     document: Document
@@ -57,7 +57,7 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
     }
   }, [filteredLanguages])
 
-  
+
   useEffect(() => {
     const fetchDocuments = async () => {
       if (!user || !contextBusiness) {
@@ -206,7 +206,7 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
         return (
           <div className="space-y-8">
             <div className="mx-0 px-0">
-              <div className="flex flex-row items-start w-1/2  gap-2 ml-auto">
+              <div className="flex flex-row items-end w-full  gap-2 ml-auto">
                 <h3 className="text-lg font-medium ">Select Language</h3>
                 <Input
                   type="text"
@@ -225,13 +225,13 @@ const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => 
                     <SelectValue placeholder="Select Language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <ScrollArea className="h-[200px]">
-                      {filteredLanguages.map((language) => (
-                        <SelectItem key={language} value={language}>
-                          {language}
-                        </SelectItem>
-                      ))}
-                    </ScrollArea>
+                    {/* <ScrollArea className="h-[200px]"> */}
+                    {filteredLanguages.map((language) => (
+                      <SelectItem key={language} value={language}>
+                        {language}
+                      </SelectItem>
+                    ))}
+                    {/* </ScrollArea> */}
                   </SelectContent>
                 </Select>
               </div>

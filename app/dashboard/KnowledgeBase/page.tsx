@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useBusinessContext } from "@/app/context/BusinessContext"
-import { db, storage } from "@/app/firebase/firebase-config"
-import { ref, listAll, getMetadata, getDownloadURL } from "firebase/storage"
+import {  storage } from "@/app/firebase/firebase-config"
+// import {    getDownloadURL } from "firebase/storage"
 import { columns } from "./_components/columns"
 import { DataTable } from "./_components/data-table"
 import { fetchDocuments } from "@/lib/firebase"
@@ -33,9 +33,9 @@ export default function StoredDataPage() {
       }
 
       try {
-        const userId = user.id
+        
         const safeBusinessName = selectedBusiness.replace(/[^a-zA-Z0-9]/g, '_')
-        const docs = await fetchDocuments(user.id, selectedBusiness, storage)
+        const docs = await fetchDocuments(user.id, safeBusinessName, storage)
         setDocuments(docs)
       } catch (err) {
         console.error("Error fetching documents:", err)

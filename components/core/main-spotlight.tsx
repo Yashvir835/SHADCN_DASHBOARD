@@ -4,14 +4,9 @@ import { cn } from '@/lib/utils';
 import React, {
   useRef,
   useState,
-  MouseEvent,
   useContext,
   createContext,
 } from 'react';
-interface MousePosition {
-  x: number;
-  y: number;
-}
 
 interface SpotlightProps {
   children: React.ReactNode;
@@ -77,15 +72,7 @@ export function SpotLightItem({ children, className }: SpotlightItemProps) {
     x: null,
     y: null,
   });
-  React.useEffect(() => {
-    const updateMousePosition = (ev: { clientX: any; clientY: any }) => {
-      setMousePosition({ x: ev.clientX, y: ev.clientY });
-    };
-    window.addEventListener('mousemove', updateMousePosition);
-    return () => {
-      window.removeEventListener('mousemove', updateMousePosition);
-    };
-  }, []);
+
 
   const [overlayColor, setOverlayColor] = useState({ x: 0, y: 0 });
   const handleMouemove = ({

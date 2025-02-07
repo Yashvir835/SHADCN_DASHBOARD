@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+# import fitz  # PyMuPDF
 # from sentence_transformers import SentenceTransformer
 from pinecone.grpc import PineconeGRPC as Pinecone
 # from pinecone import ServerlessSpec

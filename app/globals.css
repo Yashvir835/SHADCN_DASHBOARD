@@ -82,9 +82,14 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply box-border bg-background text-foreground;
     color: hsl(var(--text-light)); /* Default to light theme text color */
+    font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;  /* Hide horizontal scrollbar */
+  overflow-y: auto;    /* Enable vertical scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS devices */
   }
   .dark body {
     color: hsl(var(--text-dark)); /* Dark theme text color */
@@ -206,4 +211,27 @@
 .leaflet-container {
   height: 100%;
   width: 100%;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* Additionally, hide the scrollbar on the body element */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

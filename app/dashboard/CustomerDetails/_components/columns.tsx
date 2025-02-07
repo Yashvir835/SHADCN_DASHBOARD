@@ -15,8 +15,11 @@ export interface Customer {
   email?: string
   createdAt: string
 }
+const { selectedBusiness } = useBusinessContext()
+const { user } = useUser()
 
 export const columns = (onRefresh: () => void): ColumnDef<Customer>[] => [
+  
   {
     accessorKey: "firstName",
     header: ({ column }) => {
@@ -66,8 +69,6 @@ export const columns = (onRefresh: () => void): ColumnDef<Customer>[] => [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const customer = row.original
-      const { selectedBusiness } = useBusinessContext()
-      const { user } = useUser()
 
       return (
         <div className="flex space-x-4">

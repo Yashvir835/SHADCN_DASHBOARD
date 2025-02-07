@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { storage } from '@/app/firebase/firebase-config'
 import { fetchDocuments } from '@/lib/firebase'
-import { PdfReader } from 'pdfreader'
-import pc from '@/lib/pinecone-client'
-import { Url } from 'url'
+// import { PdfReader } from 'pdfreader'
+// import pc from '@/lib/pinecone-client'
+// import { Url } from 'url'
 
 
 export async function POST(req: NextRequest) {
@@ -95,89 +95,89 @@ export async function POST(req: NextRequest) {
   }
 }
 // Helper function to extract text from PDF using pdfreader
-const extractTextFromPDF = (buffer: Buffer): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const pdfReader = new PdfReader()
-    let text = ''
+// const extractTextFromPDF = (buffer: Buffer): Promise<string> => {
+//   return new Promise((resolve, reject) => {
+//     const pdfReader = new PdfReader()
+//     let text = ''
 
-    // Using the pdfreader to parse the PDF content
-    pdfReader.parseBuffer(buffer, (err, item) => {
-      if (err) {
-        reject(err)
-      } else if (!item) {
-        resolve(text)  // End of file, return the extracted text
-      } else if (item.text) {
-        text += item.text + '\n'  // Concatenate text from PDF
-      }
-    })
-  })
-}
+//     // Using the pdfreader to parse the PDF content
+//     pdfReader.parseBuffer(buffer, (err, item) => {
+//       if (err) {
+//         reject(err)
+//       } else if (!item) {
+//         resolve(text)  // End of file, return the extracted text
+//       } else if (item.text) {
+//         text += item.text + '\n'  // Concatenate text from PDF
+//       }
+//     })
+//   })
+// }
 // Helper function to create embeddings using Pinecone's Inference API
-const createEmbedding = async (text: string): Promise<number[]> => {
-  try {
-    // Define the model and input type
-    const model = 'multilingual-e5-large';
+// const createEmbedding = async (text: string): Promise<number[]> => {
+//   try {
+//     // Define the model and input type
+//     const model = 'multilingual-e5-large';
 
-    // Generate embeddings using Pinecone's inference API
-    const embeddingsResult = await pc.inference.embed(
-      model,
-      [text],  // Use the concatenated text fields
-      { inputType: 'passage', truncate: 'END' }
-    );
+//     // Generate embeddings using Pinecone's inference API
+//     const embeddingsResult = await pc.inference.embed(
+//       model,
+//       [text],  // Use the concatenated text fields
+//       { inputType: 'passage', truncate: 'END' }
+//     );
 
-    // Log the structure of the response to verify its format
-    // console.log("Embeddings Result:", embeddingsResult);
+//     // Log the structure of the response to verify its format
+//     // console.log("Embeddings Result:", embeddingsResult);
 
-    // Extract the embedding values from the response
-    const embedding = embeddingsResult.data[0]?.values || [];
+//     // Extract the embedding values from the response
+//     const embedding = embeddingsResult.data[0]?.values || [];
 
-    if (!embedding.length) {
-      throw new Error('No embedding found in the response.');
-    }
+//     if (!embedding.length) {
+//       throw new Error('No embedding found in the response.');
+//     }
 
-    return embedding;
-  } catch (error) {
-    console.error("Error creating embedding:", error);
-    throw new Error('Embedding generation failed');
-  }
-}
+//     return embedding;
+//   } catch (error) {
+//     console.error("Error creating embedding:", error);
+//     throw new Error('Embedding generation failed');
+//   }
+// }
 
 
 // Helper function to upsert embeddings into Pinecone
-const upsertEmbeddings = async (userId: string, adjustedEmbeddings: any[], documentName: string,dateAdded:string,businessName:string,documentUrl:string) => {
-  try {
-    // Map the embeddings to include necessary metadata
-    const ID = `${userId}/${businessName}/${documentName}`;  // Create a unique ID for the document
-    const data = adjustedEmbeddings.map((embedding: any) => ({
-      id: ID,  // Create a unique ID (you can also use a more specific unique ID here)
-      values: embedding,  // The embedding values (vector data)
-      metadata: {
-        name: documentName,
-        business: businessName,
-        dateAdded: dateAdded|| "N/A",  // Fallback for missing fields
-        documentUrl: documentUrl,
-      },
-    }));
+// const upsertEmbeddings = async (userId: string, adjustedEmbeddings: any[], documentName: string,dateAdded:string,businessName:string,documentUrl:string) => {
+//   try {
+//     // Map the embeddings to include necessary metadata
+//     const ID = `${userId}/${businessName}/${documentName}`;  // Create a unique ID for the document
+//     const data = adjustedEmbeddings.map((embedding: any) => ({
+//       id: ID,  // Create a unique ID (you can also use a more specific unique ID here)
+//       values: embedding,  // The embedding values (vector data)
+//       metadata: {
+//         name: documentName,
+//         business: businessName,
+//         dateAdded: dateAdded|| "N/A",  // Fallback for missing fields
+//         documentUrl: documentUrl,
+//       },
+//     }));
 
-    // Log data structure to check before upserting
-    console.log("Data to be upserted:", JSON.stringify(data, null, 2));
+//     // Log data structure to check before upserting
+//     console.log("Data to be upserted:", JSON.stringify(data, null, 2));
 
-    // Check if data is empty
-    if (data.length === 0) {
-      console.log("No embeddings to upsert.");
-      return NextResponse.json({ error: 'No embeddings to upsert' }, { status: 400 });
-    }
+//     // Check if data is empty
+//     if (data.length === 0) {
+//       console.log("No embeddings to upsert.");
+//       return NextResponse.json({ error: 'No embeddings to upsert' }, { status: 400 });
+//     }
 
-    // Initialize Pinecone index
-    const index = pc.index('dh', 'https://dh-y3557xk.svc.aped-4627-b74a.pinecone.io');
-    // Upsert the data into Pinecone
-    const upsertResponse = await index.namespace('example-namespace1').upsert(data);  // Use the correct namespace
+//     // Initialize Pinecone index
+//     const index = pc.index('dh', 'https://dh-y3557xk.svc.aped-4627-b74a.pinecone.io');
+//     // Upsert the data into Pinecone
+//     const upsertResponse = await index.namespace('example-namespace1').upsert(data);  // Use the correct namespace
 
-    // Log success response from Pinecone
-    console.log("Embeddings stored in Pinecone:", upsertResponse);
-    return upsertResponse;
-  } catch (error) {
-    console.error("Error upserting embeddings into Pinecone:", error);
-    throw new Error('Upsert failed');
-  }
-}
+//     // Log success response from Pinecone
+//     console.log("Embeddings stored in Pinecone:", upsertResponse);
+//     return upsertResponse;
+//   } catch (error) {
+//     console.error("Error upserting embeddings into Pinecone:", error);
+//     throw new Error('Upsert failed');
+//   }
+// }

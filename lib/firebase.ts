@@ -330,3 +330,60 @@ export const fetchDocuments = async (
     throw new Error("Failed to fetch documents.")
   }
 }
+
+
+
+
+
+// Store avatar details under "avatar" collection (document id is the avatar name)
+export const addAvatar = async (
+  userId: string,
+  business: string,
+  avatarData: {
+    avatarName: string;
+    image: string; // (or URL)
+    voice: string; // (or URL)
+    language: string;
+  }
+): Promise<void> => {
+  if (!userId) {
+    throw new Error("User is not logged in.");
+  }
+  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_");
+  const avatarRef = doc(
+    db,
+    `userDetails/${userId}/businesses/${safeBusinessName}/avatar`,
+    avatarData.avatarName
+  );
+  await setDoc(avatarRef, avatarData);
+};
+
+// Fetch all avatar documents for a business
+export const fetchAvatars = async (
+  userId: string,
+  business: string
+): Promise<
+  {
+    avatarName: string;
+    image: string;
+    voice: string;
+    language: string;
+  }[]
+> => {
+  if (!userId || !business) {
+    throw new Error("User ID and business name are required.");
+  }
+  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_");
+  const avatarsCol = collection(
+    db,
+    `userDetails/${userId}/businesses/${safeBusinessName}/avatar`
+  );
+  const querySnapshot = await getDocs(avatarsCol);
+  const avatars = querySnapshot.docs.map((doc) => doc.data()) as {
+    avatarName: string;
+    image: string;
+    voice: string;
+    language: string;
+  }[];
+  return avatars;
+};

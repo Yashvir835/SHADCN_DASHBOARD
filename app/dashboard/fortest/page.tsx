@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { MapContainer as LeafletMapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { FaLocationDot } from "react-icons/fa6";
+// import { FaLocationDot } from "react-icons/fa6";
 
   // creating the marker for the map
   const customIcon = new L.Icon({

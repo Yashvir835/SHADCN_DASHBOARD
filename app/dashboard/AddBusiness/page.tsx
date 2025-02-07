@@ -1,8 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
-import { db, storage } from "@/app/firebase/firebase-config"
-import { doc, setDoc, getDoc, query, collection, where, getDocs } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { db } from "@/app/firebase/firebase-config"
+import { doc, setDoc, getDoc } from "firebase/firestore"
 import { useUser } from "@clerk/clerk-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -49,12 +48,12 @@ const AddBusiness: React.FC = () => {
   const { user } = useUser()
   const [loading, setLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [storedData, setStoredData] = useState<FormValues | null>(null)
+  // const [storedData, setStoredData] = useState<FormValues | null>(null)
   const [alertDialogOpen, setAlertDialogOpen] = useState(false)
   const [alertDialogContent, setAlertDialogContent] = useState({ title: "", description: "" })
   const [mapCenter, setMapCenter] = useState<[number, number]>([51.505, -0.09]); // Default map center
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
-  const [position, setPosition] = useState<[number, number] | null>(null);
+  // const [position, setPosition] = useState<[number, number] | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -170,7 +169,7 @@ const AddBusiness: React.FC = () => {
 
   //  this is Custom component to handle map click events
   const MapClickHandler = () => {
-    const [address, setAddress] = useState<string>("");
+    // const [address, setAddress] = useState<string>("");
 
     useMapEvents({
       click: async (event: L.LeafletMouseEvent) => {
@@ -178,7 +177,7 @@ const AddBusiness: React.FC = () => {
 
         // Set marker and position
         setMarkerPosition([lat, lng]);
-        setPosition([lat, lng]);
+        // setPosition([lat, lng]);
 
         // Update form values for latitude and longitude
         form.setValue("latitude", lat.toString());
@@ -192,14 +191,14 @@ const AddBusiness: React.FC = () => {
           const data = await response.json();
 
           if (data && data.display_name) {
-            setAddress(data.display_name); // Update address state
+            // setAddress(data.display_name); // Update address state
             form.setValue("location", data.display_name); // Optional: Update address in the form
           } else {
-            setAddress("Address not found");
+            // setAddress("Address not found");
           }
         } catch (error) {
           console.error("Reverse geocoding failed:", error);
-          setAddress("Error fetching address");
+          // setAddress("Error fetching address");
         }
       },
     });

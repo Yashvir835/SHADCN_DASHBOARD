@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['api.slingacademy.com','images.unsplash.com'],
+    domains: [
+      'api.slingacademy.com', 
+      'images.unsplash.com', 
+      'assets.aceternity.com' // Added the required domain
+    ],
   },
   eslint: {
     ignoreDuringBuilds: false,
