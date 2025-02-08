@@ -722,6 +722,11 @@ export default function InteractiveAvatar({
       setIsTextInputDisabled(false)
     })
     try {
+      if (language.toLowerCase() === 'hi') {
+        language = 'hi';
+      } else {
+        language = 'en';
+      } 
       const res = await avatar.current.createStartAvatar({
         quality: AvatarQuality.Low,
         avatarName: "Kayla-incasualsuit-20220818",
@@ -878,7 +883,8 @@ export default function InteractiveAvatar({
   }
 
   return (
-    <div className="w-full h-screen bg-black flex items-center justify-center p-2 sm:p-4">
+    <div className=" h-screen flex items-center justify-center  sm:p-4  
+       w-full mt-0">
       <Card className="w-full h-full max-w-6xl bg-white border-none shadow-none overflow-hidden">
         <CardBody className="h-full flex flex-col justify-center items-center p-2 sm:p-4">
           {stream ? (
