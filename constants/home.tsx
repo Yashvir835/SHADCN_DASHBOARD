@@ -19,28 +19,28 @@ const iconMap1 = {
 export const homeData = [
   {
     id: 1,
-    title: "Total Revenue",
+    title: "Dollar Value",
     number: '$45,231.89',
     symbol: 'dollar',
     footer: '+20.1% from last month'
   },
   {
     id: 2,
-    title: "Subscription",
-    number: '2350',
+    title: "Total Users",
+    number: '102350',
     symbol: 'person',
     footer: '+180.1% from last month'
   },
   {
     id: 3,
-    title: "Sales",
-    number: '+12,234',
+    title: " Man Hour Saved",
+    number: '120 Hours',
     symbol: 'box',
     footer: '+19% from last month'
   },
   {
     id: 4,
-    title: "Active Now",
+    title: "Digital Twins Sessions",
     number: '+573',
     symbol: 'wave',
     footer: '+201 since last hour'

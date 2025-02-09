@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { useBusinessContext } from "@/app/context/BusinessContext"
+// import { useBusinessContext } from "@/app/context/BusinessContext"
 import { db } from "@/app/firebase/firebase-config"
 import { collection, getDocs } from "firebase/firestore"
 import { columns } from "./_components/columns"
@@ -12,14 +12,17 @@ interface Customer {
   id: string
   firstName: string
   lastName: string
+  email: string,
   phoneNumber: string
   createdAt: string
 }
 
 export default function StoredCustomerPage() {
   const { user } = useUser()
-  const { selectedBusiness } = useBusinessContext()
+  // const { selectedBusiness } = useBusinessContext()
   const [customers, setCustomers] = useState<Customer[]>([])
+  const selectedBusiness = sessionStorage.getItem("selectedBusiness");
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(false) // Refresh trigger
@@ -43,10 +46,12 @@ export default function StoredCustomerPage() {
         const querySnapshot = await getDocs(customersCollectionRef)
         const customers: Customer[] = querySnapshot.docs.map((doc) => {
           const data = doc.data()
+          console.log(`the customer data is ${data}`)
           return {
             id: doc.id, // Document ID
             firstName: data.firstName || "Unknown", // Ensure defaults
             lastName: data.lastName || "Unknown",
+            email: data.email || "Unknown",
             phoneNumber: data.phoneNumber || "Unknown",
             createdAt: data.createdAt
               ? new Date(data.createdAt.seconds * 1000).toLocaleDateString()
@@ -77,7 +82,8 @@ export default function StoredCustomerPage() {
   const handleRefresh = () => setRefreshTrigger(!refreshTrigger) // Toggle refresh trigger
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container p-8
+     mx-auto py-10">
       <h1 className="text-2xl font-bold mb-4">
         Customers for {selectedBusiness}
       </h1>

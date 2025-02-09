@@ -15,8 +15,7 @@ export interface Customer {
   email?: string
   createdAt: string
 }
-const { selectedBusiness } = useBusinessContext()
-const { user } = useUser()
+// const selectedBusiness = sessionStorage.getItem("selectedBusiness");
 
 export const columns = (onRefresh: () => void): ColumnDef<Customer>[] => [
   
@@ -45,11 +44,11 @@ export const columns = (onRefresh: () => void): ColumnDef<Customer>[] => [
     header: "Phone Number",
     cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
   },
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
-  },
+  // {
+  //   accessorKey: "email",
+  //   header: "Email",
+  //   cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
+  // },
   {
     accessorKey: "createdAt",
     header: ({ column }) => {
@@ -69,14 +68,19 @@ export const columns = (onRefresh: () => void): ColumnDef<Customer>[] => [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const customer = row.original
+      const { selectedBusiness } = useBusinessContext()
+      const { user } = useUser()
 
       return (
+        
         <div className="flex space-x-4">
           <Button
             variant="destructive"
             size="sm"
             onClick={async () => {
+
               if (user && selectedBusiness) {
+                
                 await deleteCustomer(user.id, selectedBusiness, customer.id)
                 onRefresh() // Trigger refresh function after deletion
               }

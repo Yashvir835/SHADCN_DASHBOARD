@@ -58,7 +58,7 @@ export default function StoredDataPage() {
   const handleRefresh = () => setRefreshTrigger(!refreshTrigger); // Toggle refresh trigger
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto p-8 py-10">
       <h1 className="text-2xl font-bold mb-4">Stored Documents for {selectedBusiness}</h1>
       <DataTable columns={columns(handleRefresh)} // passing the refresh
        data={documents} 

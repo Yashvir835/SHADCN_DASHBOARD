@@ -5,6 +5,8 @@ import {
   setDoc,
   collection,
   getDocs,
+  deleteDoc,
+  updateDoc,
 
 } from "firebase/firestore";
 import {
@@ -227,8 +229,10 @@ export async function addCustomer(
     // Add or update the customer data
     await setDoc(customerRef, {
       ...customerData,
-      createdAt: new Date(), // Add timestamp
+      email: customerData.email || "", // default to an empty string if undefined
+      createdAt: new Date(),
     });
+
 
     console.log("Customer added successfully!");
   } catch (error) {
@@ -332,17 +336,14 @@ export const fetchDocuments = async (
 }
 
 
-
-
-
-// Store avatar details under "avatar" collection (document id is the avatar name)
+// Add or create a new avatar document in Firestore.
 export const addAvatar = async (
   userId: string,
   business: string,
   avatarData: {
     avatarName: string;
-    image: string; // (or URL)
-    voice: string; // (or URL)
+    image: string; // the actual URL of the image
+    voice: string; // actual URL for audio
     language: string;
   }
 ): Promise<void> => {
@@ -358,7 +359,7 @@ export const addAvatar = async (
   await setDoc(avatarRef, avatarData);
 };
 
-// Fetch all avatar documents for a business
+// Fetch all avatar documents for a business.
 export const fetchAvatars = async (
   userId: string,
   business: string
@@ -386,4 +387,41 @@ export const fetchAvatars = async (
     language: string;
   }[];
   return avatars;
+};
+
+// Delete an avatar document from Firestore.
+export const deleteAvatar = async (
+  userId: string,
+  business: string,
+  avatarName: string
+): Promise<void> => {
+  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_");
+  const avatarRef = doc(
+    db,
+    `userDetails/${userId}/businesses/${safeBusinessName}/avatar`,
+    avatarName
+  );
+  await deleteDoc(avatarRef);
+};
+
+// Update an existing avatar document in Firestore.
+export const updateAvatar = async (
+  userId: string,
+  business: string,
+  avatarName: string, // the document ID (typically the original avatarName)
+  avatarData: {
+    avatarName: string;
+    image: string;
+    voice: string;
+    language: string;
+  }
+): Promise<void> => {
+  const safeBusinessName = business.replace(/[^a-zA-Z0-9]/g, "_");
+  const avatarRef = doc(
+    db,
+    `userDetails/${userId}/businesses/${safeBusinessName}/avatar`,
+    avatarName
+  );
+  // Using updateDoc to modify only the provided fields
+  await updateDoc(avatarRef, avatarData);
 };

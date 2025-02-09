@@ -11,6 +11,7 @@ import { FiDollarSign } from "react-icons/fi";
 import { IoPersonOutline } from "react-icons/io5";
 import { FaBoxArchive } from "react-icons/fa6";
 import { CiWavePulse1 } from "react-icons/ci";
+import { Ri24HoursFill } from "react-icons/ri";
 
 // Define the type for home data items
 interface HomeDataItem {
@@ -26,7 +27,7 @@ import { homeData } from "@/constants/home";
 const iconMap: Record<HomeDataItem['symbol'], JSX.Element> = {
   dollar: <FiDollarSign />,
   person: <IoPersonOutline />,
-  box: <FaBoxArchive />,
+  box: <Ri24HoursFill />,
   wave: <CiWavePulse1 />,
 };
 

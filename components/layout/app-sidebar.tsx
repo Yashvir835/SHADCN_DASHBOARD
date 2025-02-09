@@ -25,7 +25,7 @@ export function AppSidebar() {
 
 
   return (
-    <Sidebar className="bg-off-white w-[275px]" variant="sidebar" collapsible="icon">
+    <Sidebar className="bg-off-white w-[275px] hide-scrollbar" variant="sidebar" collapsible="icon">
       <SidebarHeader />
       <SidebarContent className="overflow-x-hidden">
         <SidebarGroup>
