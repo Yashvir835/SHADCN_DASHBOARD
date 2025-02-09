@@ -1,5 +1,5 @@
 import { Input, Spinner, Tooltip } from "@nextui-org/react";
-import { PaperPlaneRight } from "@phosphor-icons/react";
+import { Airplane, ArrowRight, PaperPlaneRight } from "@phosphor-icons/react";
 import clsx from "clsx";
 
 interface StreamingAvatarTextInputProps {

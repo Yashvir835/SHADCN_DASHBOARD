@@ -14,7 +14,25 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onStartRecording, onStopR
   const audioChunksRef = useRef<Blob[]>([]);
   const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  
+  useEffect(() => {
+    const initAudioContext = async () => {
+      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(context);
+      const analyserNode = context.createAnalyser();
+      analyserNode.minDecibels = -90;
+      analyserNode.maxDecibels = -10;
+      analyserNode.smoothingTimeConstant = 0.85;
+      setAnalyser(analyserNode);
+    };
+
+    initAudioContext();
+
+    return () => {
+      if (audioContext) {
+        audioContext.close();
+      }
+    };
+  }, []);
 
   const startRecording = async () => {
     if (!audioContext || !analyser) return;
