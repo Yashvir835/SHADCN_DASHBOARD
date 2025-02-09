@@ -1,4 +1,3 @@
-
 // "use client"
 
 // import type { StartAvatarResponse } from "@heygen/streaming-avatar"
@@ -13,7 +12,7 @@
 // import { useEffect, useRef, useState } from "react"
 // import { AVATARS, STT_LANGUAGE_LIST } from "@/app/lib/constants"
 // import { Mic, Maximize2, Minimize2, Send } from "lucide-react"
-// import { ScrollArea } from "@/components/ui/scroll-area"  
+// import { ScrollArea } from "@/components/ui/scroll-area"
 
 // export default function InteractiveAvatar() {
 //   const [isLoadingSession, setIsLoadingSession] = useState(false)
@@ -34,8 +33,8 @@
 //   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([])
 //   const [isMaximized, setIsMaximized] = useState(false)
 //   const scrollAreaRef = useRef<HTMLDivElement>(null)
-//   const [textInput, setTextInput] = useState<string>("")
-//   const [isTextInputDisabled, setIsTextInputDisabled] = useState(false)
+//   const [textInput, setTextInput] = useState("")
+//   const [isTextInputDisabled, setIsTextInputDisabled] = useState(true)
 
 //   async function fetchAccessToken() {
 //     try {
@@ -107,7 +106,10 @@
 
 //   useEffect(() => {
 //     if (scrollAreaRef.current) {
-//       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+//       const scrollElement = scrollAreaRef.current.querySelector("[data-radix-scroll-area-viewport]")
+//       if (scrollElement) {
+//         scrollElement.scrollTop = scrollElement.scrollHeight
+//       }
 //     }
 //   }, [messages])
 
@@ -146,10 +148,12 @@
 //     avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
 //       console.log("Avatar started talking", e)
 //       setIsAvatarTalking(true)
+//       setIsTextInputDisabled(true)
 //     })
 //     avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
 //       console.log("Avatar stopped talking", e)
 //       setIsAvatarTalking(false)
+//       setIsTextInputDisabled(false)
 //     })
 //     avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
 //       console.log("Stream disconnected")
@@ -158,6 +162,7 @@
 //     avatar.current?.on(StreamingEvents.STREAM_READY, (event) => {
 //       console.log("Stream ready:", event.detail)
 //       setStream(event.detail)
+//       setIsTextInputDisabled(false)
 //     })
 //     try {
 //       const res = await avatar.current.createStartAvatar({
@@ -183,6 +188,7 @@
 //   async function endSession() {
 //     await avatar.current?.stopAvatar()
 //     setStream(undefined)
+//     setIsTextInputDisabled(true)
 //   }
 
 //   useEffect(() => {
@@ -241,7 +247,34 @@
 //     setIsMaximized(!isMaximized)
 //   }
 
+//   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+//     if (e.key === "Enter" && !e.shiftKey) {
+//       handleTextSubmit()
+//     }
+//   }
 
+//   const handleTextSubmit = async () => {
+//     if (!textInput.trim()) return
+//     setMessages([...messages, { role: "user", content: textInput }])
+//     setTextInput("")
+//     try {
+//       const response = await fetch("http://127.0.0.1:5000/text_chat", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ message: textInput }),
+//       })
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch response from AI agent.")
+//       }
+//       const data = await response.json()
+//       setMessages([...messages, { role: "user", content: textInput }, { role: "assistant", content: data.response }])
+//       await speakResponse(data.response)
+//     } catch (error) {
+//       setError(error.message)
+//     }
+//   }
 
 //   // Function to convert WebM to WAV
 //   const convertToWav = async (webmBlob: Blob): Promise<Blob> => {
@@ -323,59 +356,8 @@
 //     }
 //   }
 
-//   // New function to handle text-based chat
-//   const handleTextSubmit = async () => {
-//     if (!textInput.trim() || isTextInputDisabled) return;
-
-//     try {
-//       setIsTextInputDisabled(true)
-
-//       // Send text as JSON
-//       const response = await fetch("http://127.0.0.1:5000/text_chat", {
-//         method: "POST",
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ user_input: textInput })
-//       })
-
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch response from AI agent.")
-//       }
-
-//       const data = await response.json()
-
-//       // Update messages
-//       setMessages((prevMessages) => [
-//         ...prevMessages,
-//         { role: "user", content: data.user_input },
-//         { role: "assistant", content: data.response }
-//       ])
-
-//       // Clear text input
-//       setTextInput("")
-
-//       // Speak the response if avatar is ready
-//       if (data.response && avatar.current) {
-//         await speakResponse(data.response)
-//       }
-//     } catch (err) {
-//       setError(err.message)
-//     } finally {
-//       setIsTextInputDisabled(false)
-//     }
-//   }
-
-//   // Handle Enter key press for text submission
-//   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//     if (e.key === 'Enter' && !e.shiftKey) {
-//       e.preventDefault()
-//       handleTextSubmit()
-//     }
-//   }
-
 //   return (
-//     <div className="w-full min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-2 sm:p-4">
+//     <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-2 sm:p-4">
 //       <Card className="w-full h-full max-w-6xl bg-gray-800/90 border-none shadow-none overflow-hidden">
 //         <CardBody className="h-full flex flex-col justify-center items-center p-2 sm:p-4">
 //           {stream ? (
@@ -426,8 +408,8 @@
 //                 </Button>
 //               </div>
 //               {!isMaximized && (
-//                 <div className="w-full sm:w-1/3 h-64 sm:h-full bg-gray-700/50 rounded-lg overflow-hidden flex flex-col">
-//                   <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+//                 <div className="w-full sm:w-1/3 h-full bg-gray-700/50 rounded-lg overflow-hidden flex flex-col">
+//                   <ScrollArea className="flex-grow p-4 h-[calc(100%-60px)]" ref={scrollAreaRef}>
 //                     {messages.map((message, index) => (
 //                       <div key={index} className={`mb-4 ${message.role === "user" ? "text-right" : "text-left"}`}>
 //                         <div
@@ -442,7 +424,7 @@
 //                   </ScrollArea>
 
 //                   {/* Text Input Section */}
-//                   <div className="p-4 border-t border-gray-600 flex items-center space-x-2">
+//                   <div className="p-4 border-t border-gray-600 flex items-center space-x-2 h-[60px]">
 //                     <Input
 //                       value={textInput}
 //                       onChange={(e) => setTextInput(e.target.value)}
@@ -466,7 +448,7 @@
 //                 </div>
 //               )}
 //             </div>
-//             ) : !isLoadingSession ? (
+//           ) : !isLoadingSession ? (
 //             <div className="w-full max-w-xs sm:max-w-md space-y-4 sm:space-y-6">
 //               <h2 className="text-3xl font-bold text-blue-300 text-center">Interactive AI Avatar</h2>
 //               <div className="space-y-4">
@@ -565,7 +547,6 @@
 //     </div>
 //   )
 // }
-
 "use client"
 
 import type { StartAvatarResponse } from "@heygen/streaming-avatar"
@@ -576,19 +557,32 @@ import StreamingAvatar, {
   TaskType,
   VoiceEmotion,
 } from "@heygen/streaming-avatar"
-import { Button, Card, CardBody, Select, SelectItem, Spinner, Input } from "@nextui-org/react"
+import { Button, Card, CardBody, Spinner, Input } from "@nextui-org/react"
 import { useEffect, useRef, useState } from "react"
-import { AVATARS, STT_LANGUAGE_LIST } from "@/app/lib/constants"
-import { Mic, Maximize2, Minimize2, Send } from "lucide-react"
+import { Mic, Maximize2, Minimize2, Send, X } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-export default function InteractiveAvatar() {
-  const [isLoadingSession, setIsLoadingSession] = useState(false)
+interface InteractiveAvatarProps {
+  userId: string
+  document: string
+  avatarName: string
+  image: string
+  voice: string
+  userEmail: string
+  language: string
+}
+
+export default function InteractiveAvatar({
+  userId,
+  document,
+  avatarName,
+  image,
+  voice,
+  userEmail,
+  language,
+}: InteractiveAvatarProps) {
+  const [isLoadingSession, setIsLoadingSession] = useState(true)
   const [stream, setStream] = useState<MediaStream>()
-  const [debug, setDebug] = useState<string>()
-  const [knowledgeId, setKnowledgeId] = useState<string>("")
-  const [avatarId, setAvatarId] = useState<string>("")
-  const [language, setLanguage] = useState<string>("en")
   const [data, setData] = useState<StartAvatarResponse>()
   const mediaStream = useRef<HTMLVideoElement>(null)
   const avatar = useRef<StreamingAvatar | null>(null)
@@ -597,7 +591,6 @@ export default function InteractiveAvatar() {
   const [error, setError] = useState("")
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
-  const [isTouchRecording, setIsTouchRecording] = useState(false)
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([])
   const [isMaximized, setIsMaximized] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -610,7 +603,6 @@ export default function InteractiveAvatar() {
         method: "POST",
       })
       const token = await response.text()
-      console.log("Access Token:", token)
       return token
     } catch (error) {
       console.error("Error fetching access token:", error)
@@ -679,7 +671,7 @@ export default function InteractiveAvatar() {
         scrollElement.scrollTop = scrollElement.scrollHeight
       }
     }
-  }, [messages])
+  }, [messages]) //Corrected dependency
 
   const startRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "inactive") {
@@ -698,11 +690,11 @@ export default function InteractiveAvatar() {
 
   async function speakResponse(text: string) {
     if (!avatar.current) {
-      setDebug("Avatar API not initialized")
+      console.error("Avatar API not initialized")
       return
     }
     await avatar.current.speak({ text, taskType: TaskType.REPEAT, taskMode: TaskMode.SYNC }).catch((e) => {
-      setDebug(e.message)
+      console.error(e.message)
     })
   }
 
@@ -713,33 +705,34 @@ export default function InteractiveAvatar() {
     avatar.current = new StreamingAvatar({
       token: newToken,
     })
-    avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (e) => {
-      console.log("Avatar started talking", e)
+    avatar.current.on(StreamingEvents.AVATAR_START_TALKING, () => {
       setIsAvatarTalking(true)
       setIsTextInputDisabled(true)
     })
-    avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, (e) => {
-      console.log("Avatar stopped talking", e)
+    avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, () => {
       setIsAvatarTalking(false)
       setIsTextInputDisabled(false)
     })
     avatar.current.on(StreamingEvents.STREAM_DISCONNECTED, () => {
-      console.log("Stream disconnected")
       endSession()
     })
     avatar.current?.on(StreamingEvents.STREAM_READY, (event) => {
-      console.log("Stream ready:", event.detail)
       setStream(event.detail)
       setIsTextInputDisabled(false)
     })
     try {
+      if (language.toLowerCase() === 'hi') {
+        language = 'hi';
+      } else {
+        language = 'en';
+      }
       const res = await avatar.current.createStartAvatar({
         quality: AvatarQuality.Low,
-        avatarName: avatarId,
-        knowledgeId: knowledgeId,
+        avatarName: "Kayla-incasualsuit-20220818",
+        knowledgeId: document,
         voice: {
           rate: 1.5,
-          emotion: VoiceEmotion.EXCITED,
+          emotion: VoiceEmotion.FRIENDLY,
         },
         language: language,
         disableIdleTimeout: true,
@@ -760,6 +753,7 @@ export default function InteractiveAvatar() {
   }
 
   useEffect(() => {
+    startSession()
     return () => {
       endSession()
     }
@@ -770,46 +764,9 @@ export default function InteractiveAvatar() {
       mediaStream.current.srcObject = stream
       mediaStream.current.onloadedmetadata = () => {
         mediaStream.current!.play()
-        setDebug("Playing")
       }
     }
   }, [mediaStream, stream])
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" && !isAvatarTalking && stream) {
-        startRecording()
-      }
-    }
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space" && isRecording) {
-        stopRecording()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    window.addEventListener("keyup", handleKeyUp)
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      window.removeEventListener("keyup", handleKeyUp)
-    }
-  }, [isAvatarTalking, stream, isRecording])
-
-  const handleTouchStart = () => {
-    if (!isAvatarTalking && stream) {
-      startRecording()
-      setIsTouchRecording(true)
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (isTouchRecording) {
-      stopRecording()
-      setIsTouchRecording(false)
-    }
-  }
 
   const toggleMaximize = () => {
     setIsMaximized(!isMaximized)
@@ -925,8 +882,9 @@ export default function InteractiveAvatar() {
   }
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-2 sm:p-4">
-      <Card className="w-full h-full max-w-6xl bg-gray-800/90 border-none shadow-none overflow-hidden">
+    <div className=" h-screen flex items-center justify-center  sm:p-4  
+       w-full mt-0">
+      <Card className="w-full h-full max-w-6xl bg-white border-none shadow-none overflow-hidden">
         <CardBody className="h-full flex flex-col justify-center items-center p-2 sm:p-4">
           {stream ? (
             <div className={`w-full h-full flex flex-col ${isMaximized ? "" : "sm:flex-row"} gap-2 sm:gap-4`}>
@@ -940,48 +898,47 @@ export default function InteractiveAvatar() {
                   <Button
                     size="sm"
                     variant="flat"
-                    color="primary"
+                    color="default"
                     isIconOnly
                     onClick={toggleMaximize}
-                    className="bg-gray-800/50 hover:bg-gray-700/50"
+                    className="bg-white/50 hover:bg-white/70"
                   >
                     {isMaximized ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
                   </Button>
                 </div>
                 <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center z-10">
-                  <div className="bg-gray-900/80 text-blue-300 px-4 py-2 rounded-full text-sm">
+                  <div className="bg-white/80 text-black px-4 py-2 rounded-full text-sm">
                     {isAvatarTalking ? "Avatar is talking..." : isRecording ? "Recording..." : "Ready"}
                   </div>
                   <Button
                     size="sm"
                     color={isRecording ? "danger" : "primary"}
                     variant="shadow"
-                    onTouchStart={handleTouchStart}
-                    onTouchEnd={handleTouchEnd}
-                    onMouseDown={startRecording}
-                    onMouseUp={stopRecording}
+                    onClick={isRecording ? stopRecording : startRecording}
                     className="rounded-full text-xs sm:text-sm"
                   >
                     <Mic size={16} className="mr-1 sm:mr-2" />
-                    {isRecording ? "Recording..." : "Hold to Record"}
+                    {isRecording ? "Stop Recording" : "Start Recording"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    variant="shadow"
+                    onClick={endSession}
+                    className="rounded-full text-xs sm:text-sm"
+                  >
+                    <X size={16} className="mr-1 sm:mr-2" />
+                    Close
                   </Button>
                 </div>
-                <Button
-                  className="absolute top-2 left-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-4 transition-all duration-300 ease-in-out transform hover:scale-105"
-                  size="sm"
-                  variant="shadow"
-                  onClick={endSession}
-                >
-                  End Session
-                </Button>
               </div>
               {!isMaximized && (
-                <div className="w-full sm:w-1/3 h-full bg-gray-700/50 rounded-lg overflow-hidden flex flex-col">
+                <div className="w-full sm:w-1/3 h-full bg-gray-100 rounded-lg overflow-hidden flex flex-col">
                   <ScrollArea className="flex-grow p-4 h-[calc(100%-60px)]" ref={scrollAreaRef}>
                     {messages.map((message, index) => (
                       <div key={index} className={`mb-4 ${message.role === "user" ? "text-right" : "text-left"}`}>
                         <div
-                          className={`inline-block p-3 rounded-lg ${message.role === "user" ? "bg-blue-600 text-white" : "bg-gray-600 text-blue-100"
+                          className={`inline-block p-3 rounded-lg ${message.role === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"
                             }`}
                         >
                           {message.content}
@@ -991,7 +948,7 @@ export default function InteractiveAvatar() {
                   </ScrollArea>
 
                   {/* Text Input Section */}
-                  <div className="p-4 border-t border-gray-600 flex items-center space-x-2 h-[60px]">
+                  <div className="p-4 border-t border-gray-300 flex items-center space-x-2 h-[60px]">
                     <Input
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
@@ -1015,90 +972,14 @@ export default function InteractiveAvatar() {
                 </div>
               )}
             </div>
-          ) : !isLoadingSession ? (
-            <div className="w-full max-w-xs sm:max-w-md space-y-4 sm:space-y-6">
-              <h2 className="text-3xl font-bold text-blue-300 text-center">Interactive AI Avatar</h2>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="knowledgeId" className="text-sm font-medium text-blue-300">
-                    Custom Knowledge ID (optional)
-                  </label>
-                  <input
-                    id="knowledgeId"
-                    className="w-full p-2 sm:p-3 rounded-lg bg-gray-700 border border-blue-500 text-blue-100 placeholder-blue-300/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm sm:text-base"
-                    placeholder="Enter a custom knowledge ID"
-                    value={knowledgeId}
-                    onChange={(e) => setKnowledgeId(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="avatarId" className="text-sm font-medium text-blue-300">
-                    Custom Avatar ID (optional)
-                  </label>
-                  <input
-                    id="avatarId"
-                    className="w-full p-2 sm:p-3 rounded-lg bg-gray-700 border border-blue-500 text-blue-100 placeholder-blue-300/50 focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm sm:text-base"
-                    placeholder="Enter a custom avatar ID"
-                    value={avatarId}
-                    onChange={(e) => setAvatarId(e.target.value)}
-                  />
-                </div>
-                <Select
-                  label="Select an avatar"
-                  placeholder="Choose from example avatars"
-                  className="w-full text-sm sm:text-base"
-                  onChange={(e) => {
-                    setAvatarId(e.target.value)
-                  }}
-                >
-                  {AVATARS.map((avatar) => (
-                    <SelectItem key={avatar.avatar_id} textValue={avatar.avatar_id}>
-                      {avatar.name}
-                    </SelectItem>
-                  ))}
-                </Select>
-                <Select
-                  label="Select language"
-                  placeholder="Choose a language"
-                  className="w-full text-sm sm:text-base"
-                  selectedKeys={[language]}
-                  onChange={(e) => {
-                    setLanguage(e.target.value)
-                  }}
-                >
-                  {STT_LANGUAGE_LIST.map((lang) => (
-                    <SelectItem key={lang.key}>{lang.label}</SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <Button
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-base sm:text-lg font-semibold py-2 sm:py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105"
-                size="lg"
-                onClick={startSession}
-              >
-                Start Interactive Session
-              </Button>
-              <p className="text-blue-200 text-sm text-center">
-                Press and hold spacebar to record once the session starts
-              </p>
-            </div>
           ) : (
             <div className="flex flex-col items-center justify-center space-y-2 sm:space-y-4">
-              <Spinner color="primary" size="lg" />
-              <p className="text-blue-300 text-base sm:text-lg">Initializing AI Avatar...</p>
+              <Spinner color="default" size="lg" />
+              <p className="text-black text-base sm:text-lg">Initializing AI Avatar...</p>
             </div>
           )}
         </CardBody>
       </Card>
-      {debug && (
-        <div className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 max-w-[calc(100%-1rem)] sm:max-w-xs bg-gray-800/90 border border-blue-500 rounded-lg p-2 sm:p-4 shadow-lg z-50">
-          <p className="font-mono text-xs text-blue-300 break-words">
-            <span className="font-bold text-blue-400">Console:</span>
-            <br />
-            {debug}
-          </p>
-        </div>
-      )}
       <style jsx>{`
         @media (max-width: 640px) {
           input, select, button {

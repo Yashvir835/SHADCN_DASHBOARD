@@ -46,6 +46,7 @@ interface Document {
 // Main component for creating an avatar through a multi-step form.
 const AvatarCreationForm: React.FC<AvatarCreationFormProps> = ({ onSubmit }) => {
   // State to track the current step in the form (0: Document, 1: Avatar & Language, 2: Review)
+  // State to track the current step in the form (0: Document, 1: Avatar & Language, 2: Review)
   const [currentStep, setCurrentStep] = useState(0)
 
   // State for the selected document from Firebase storage (if any)

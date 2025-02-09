@@ -3,14 +3,16 @@ from flask_cors import CORS
 import whisper
 import os
 import tempfile
-# from pydub import AudioSegment
-# from pydub.playback import play
+from pydub import AudioSegment
+from pydub.playback import play
 from context_aware_prompt_handler import handle_query
 import warnings
 from werkzeug.utils import secure_filename
-# from pydub import AudioSegment
-# from pydub.playback import play
+from pydub import AudioSegment
+from pydub.playback import play
 import tempfile
+import numpy as np
+from utils import decode_and_save_image, flip_image, Aadhar_OCR
 
 def play_audio(file_storage):
     with tempfile.NamedTemporaryFile(delete=True, suffix=".wav") as temp_audio_file:
@@ -111,6 +113,49 @@ def text_chat():
         print(f"Error processing request: {str(e)}")
         return jsonify({"error": f"Error processing request: {str(e)}"}), 500
 
+@app.route("/api/scan-document", methods=["POST"])
+def scan_document():
+    try:
+        # Get JSON data
+        data = request.get_json()
+        image_base64 = data.get("image", "")
+
+        if not image_base64:
+            return jsonify({"error": "No image provided"}), 400
+
+        # Save image to a temporary file
+        temp_image_path = decode_and_save_image(image_base64)
+
+        if not os.path.exists(temp_image_path):
+            return jsonify({"error": "Failed to save image"}), 500
+
+        # Flip the image to correct mirroring issue
+        corrected_image_path = temp_image_path
+
+        if not corrected_image_path:
+            return jsonify({"error": "Failed to process image"}), 500
+
+        # Run OCR extraction
+        detector = Aadhar_OCR(img_path=corrected_image_path)
+        extracted_data = detector.extract_data()
+
+        # Delete temporary file
+        os.remove(corrected_image_path)
+
+        # Format output as JSON
+        output = {
+            "aadhar_number": extracted_data[0] if len(extracted_data) > 0 else "",
+            "gender": extracted_data[1] if len(extracted_data) > 1 else "",
+            "dob": extracted_data[2] if len(extracted_data) > 2 else "",
+            "masked_aadhar": extracted_data[3] if len(extracted_data) > 3 else ""
+        }
+
+        return jsonify(output), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500
+    
 # Run the Flask app
 if __name__ == "__main__":
     app.run(debug=False, port=5000,threaded = True)
