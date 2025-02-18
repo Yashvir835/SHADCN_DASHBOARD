@@ -14,6 +14,21 @@ List any software, libraries, or hardware needed to run this project.
 ### Installing
 A step-by-step guide on how to install the project.
 
+#### To start the flask server
+```bash
+conda create -n <env_name> python=3.10.16 -y
+conda activate <env_name>
+
+pip install -r requirements.txt
+
+cd ./flask_backend
+touch .env.local
+add API keys to .env.local
+
+
+```
+cd ./flask_backend
+
 ## Usage
 Instructions on how to use the project or its features.
 
