@@ -24,6 +24,7 @@ pip install -r requirements.txt
 cd ./flask_backend
 touch .env.local
 add API keys to .env.local
+python app.py
 
 
 ```
